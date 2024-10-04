@@ -1,34 +1,24 @@
 {% extends 'base.html' %}
 
-{% block title %}Modifier {{ title }}- BookDB{% endblock %}
+{% block title %}{% if id %}Modifier{% else %}Ajouter{% endif %} - BookDB{% endblock %}
 
 {% block content %}
-    <form action="{{ url_for('appliquer') }}" method="post">
-        <h1>Modifier {{ title }}</h1>
+    <form action="{{ url_for('modifier') }}{% if id %}?id={{ id }}{% endif %}" method="post">
+        <h1>{% if id %}Modifier{% else %}Ajouter{% endif %}</h1>
         <div class="grid">
             <label>
                 <span>Titre*</span>
-                <input type="text" name="title" value="{{ title }}" required>
+                <input type="text" name="title" value="{% if data %}{{ data['title'] }}{% endif %}" placeholder="{% if data %}{{ data['title'] }}{% endif %}" required>
             </label>
             <label>
                 <span>Auteur*</span>
-                <input type="text" name="author" value="{{ author }}" required>
+                <input type="text" name="author" value="{% if data %}{{ data['author'] }}{% endif %}" placeholder="{% if data %}{{ data['author'] }}{% endif %}" required>
             </label>
             <label>
                 <span>Année*</span>
-                <input type="number" name="year" value="{{ year }}" required>
+                <input type="number" name="year" value="{% if data %}{{ data['year'] }}{% endif %}" placeholder="{% if data %}{{ data['year'] }}{% endif %}" required>
             </label>
-            <label>
-                <span>Note</span>
-                <input type="number" name="rate" value="{{ rate }}" min="0" max="5">
-            </label>
-        </div>
-        <div class="flex blip">
-            <label class="comment">
-                <span>Commentaire</span>
-                <textarea name="comment">{{ comment }}</textarea>
-            </label>
-            <button class="button hover" type="submit">Ajouter</button>
+            <div class="flex"><button class="button hover" type="submit">{% if id %}Modifier{% else %}Ajouter{% endif %}</button></div>
         </div>
     </form>
 {% endblock %}

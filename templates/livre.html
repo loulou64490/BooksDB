@@ -11,6 +11,5 @@
     {% if comment %}
         <p>{{ data['comment'] }}</p>
     {% endif %}
-    <a href="{{ url_for('modifier') }}?{{ data['id'] }}">Modifier</a>
-    <a href="{{ url_for('supprimer') }}?{{ data['id'] }}">Supprimer</a>
+    <a class="hover item margin button" href="{{ url_for('modifier') }}?id={{ data['id'] }}">Modifier</a>
 {% endblock %}

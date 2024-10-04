@@ -185,6 +185,11 @@ main textarea:focus {
     padding: 0.6rem;
 }
 
+.margin{
+    margin: 0.6rem;
+    display: inline-block;
+}
+
 footer {
     width: 100%;
     box-shadow: 0 -2px 0 var(--primary);
