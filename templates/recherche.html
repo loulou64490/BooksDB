@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Recherche - BookDB{% endblock %}
+
+{% block content %}
+    {% if data %}
+        <ul class="result">
+            <h1>Résultats</h1>
+            {% for book in data %}
+                <a class="hover item" href="{{ url_for('livre') }}?id={{ book['id'] }}">{{ book['title'] }} par {{ book['author'] }}, {{ book['year'] }}</a>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun livre trouvé.</p>
+    {% endif %}
+{% endblock %}

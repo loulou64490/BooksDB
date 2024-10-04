@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ data['title'] }} - BookDB{% endblock %}
+
+{% block content %}
+    <h1>{{ data['title'] }}</h1>
+    <p>{{ data['author'] }}, {{ data['year'] }}</p>
+    {% if rate %}
+        <p>Note: {{ data['rate'] }}</p>
+    {% endif %}
+    {% if comment %}
+        <p>{{ data['comment'] }}</p>
+    {% endif %}
+    <a href="{{ url_for('modifier') }}?{{ data['id'] }}">Modifier</a>
+    <a href="{{ url_for('supprimer') }}?{{ data['id'] }}">Supprimer</a>
+{% endblock %}

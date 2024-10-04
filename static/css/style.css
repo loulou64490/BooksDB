@@ -1,0 +1,198 @@
+:root {
+    --primary: black;
+    --bg: white;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body, html {
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    font-family: "Onest", system-ui;
+    font-optical-sizing: auto;
+    font-style: normal;
+    background: var(--bg);
+    color: var(--primary);
+    cursor: auto;
+}
+
+.container {
+    max-width: 70rem;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.cursor {
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+.theme-icon {
+    height: 2rem;
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary);
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+.flex {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+*:focus, .hover {
+    outline: 2px solid var(--primary);
+}
+
+.hover:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--primary);
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: var(--bg);
+    box-shadow: 0 2px 0 var(--primary);
+}
+
+ul {
+    list-style: none;
+    justify-content: space-between;
+}
+
+header .title {
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+}
+
+header a img {
+    height: 3rem;
+    width: auto;
+}
+
+.ajouter {
+    padding: 0.6rem;
+}
+
+input, textarea {
+    background: none;
+    padding: 0.6rem;
+    font-size: 1rem;
+    border: none;
+    color: var(--primary);
+}
+
+input:focus {
+    outline: none;
+}
+
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.2rem;
+}
+
+button svg {
+    height: 2rem;
+    width: auto;
+}
+
+button path {
+    stroke: var(--primary);
+}
+
+.content {
+    width: 100%;
+    margin-top: 5rem;
+    min-height: calc(100vh - 6rem);
+}
+
+main form{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+main h1{
+    font-size: 2rem;
+    font-weight: normal;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 2fr 2fr 0.5fr 0.5fr;
+  gap: 0 1rem;
+}
+
+.comment{
+    width: 100%;
+}
+main button {
+    font-size: 1rem;
+    font-family: "Onest", system-ui;
+    padding: 0.6rem;
+}
+
+main label {
+    display: flex;
+    flex-direction: column;
+}
+
+.blip{
+    gap: 3rem;
+}
+
+main textarea, main input {
+    border: 2px solid var(--primary);
+}
+
+main textarea{
+    resize: none;
+    height: 6rem;
+}
+
+main textarea:focus {
+    outline: none;
+}
+
+.result {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.item{
+    padding: 0.6rem;
+}
+
+footer {
+    width: 100%;
+    box-shadow: 0 -2px 0 var(--primary);
+}
+
+footer div {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
