@@ -3,22 +3,27 @@
 {% block title %}{% if id %}Modifier{% else %}Ajouter{% endif %} - BookDB{% endblock %}
 
 {% block content %}
-    <form action="{{ url_for('modifier') }}{% if id %}?id={{ id }}{% endif %}" method="post">
+    <form class="modifier" action="{{ url_for('modifier') }}{% if id %}?id={{ id }}{% endif %}" method="post">
         <h1>{% if id %}Modifier{% else %}Ajouter{% endif %}</h1>
         <div class="grid">
             <label>
                 <span>Titre*</span>
-                <input type="text" name="title" value="{% if data %}{{ data['title'] }}{% endif %}" placeholder="{% if data %}{{ data['title'] }}{% endif %}" required>
+                <input type="text" name="title" value="{% if data %}{{ data['title'] }}{% endif %}"
+                       placeholder="{% if data %}{{ data['title'] }}{% endif %}" required>
             </label>
             <label>
                 <span>Auteur*</span>
-                <input type="text" name="author" value="{% if data %}{{ data['author'] }}{% endif %}" placeholder="{% if data %}{{ data['author'] }}{% endif %}" required>
+                <input type="text" name="author" value="{% if data %}{{ data['author'] }}{% endif %}"
+                       placeholder="{% if data %}{{ data['author'] }}{% endif %}" required>
             </label>
             <label>
                 <span>Année*</span>
-                <input type="number" name="year" value="{% if data %}{{ data['year'] }}{% endif %}" placeholder="{% if data %}{{ data['year'] }}{% endif %}" required>
+                <input type="number" name="year" value="{% if data %}{{ data['year'] }}{% endif %}"
+                       placeholder="{% if data %}{{ data['year'] }}{% endif %}" required>
             </label>
-            <div class="flex"><button class="button hover" type="submit">{% if id %}Modifier{% else %}Ajouter{% endif %}</button></div>
+            <div class="flex">
+                <button class="hover" type="submit">{% if id %}Modifier{% else %}Ajouter{% endif %}</button>
+            </div>
         </div>
     </form>
 {% endblock %}

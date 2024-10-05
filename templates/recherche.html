@@ -7,7 +7,7 @@
         <ul class="result">
             <h1>Résultats</h1>
             {% for book in data %}
-                <a class="hover item" href="{{ url_for('livre') }}?id={{ book['id'] }}">{{ book['title'] }} par {{ book['author'] }}, {{ book['year'] }}</a>
+                <a class="hover button" href="{{ url_for('livre') }}?id={{ book['id'] }}">{{ book['title'] }} par {{ book['author'] }}, {{ book['year'] }}</a>
             {% endfor %}
         </ul>
     {% else %}

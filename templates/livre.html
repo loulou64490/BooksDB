@@ -3,13 +3,42 @@
 {% block title %}{{ data['title'] }} - BookDB{% endblock %}
 
 {% block content %}
-    <h1>{{ data['title'] }}</h1>
-    <p>{{ data['author'] }}, {{ data['year'] }}</p>
-    {% if rate %}
-        <p>Note: {{ data['rate'] }}</p>
+    <div class="flex space">
+        <div>
+            <h1>{{ data['title'] }}</h1>
+            <p>{{ data['author'] }}, {{ data['year'] }}</p>
+            {% if comments %}
+                <p>Note moyenne : {{ average[0] }}/5</p>
+            {% endif %}
+        </div>
+        <div class="flex">
+            <a class="hover button" href="{{ url_for('modifier') }}?id={{ data['id'] }}">Modifier</a>
+            <button class="hover" onclick="document.getElementById('delete').style.display = 'flex'">Supprimer</button>
+            <div class="popup-bg" id="delete">
+                <div class="popup">
+                    <p>Voulez-vous vraiment supprimer {{ data['title'] }} ?</p>
+                    <div class="flex top">
+                        <button class="hover" onclick="document.getElementById('delete').style.display = 'none'">Annuler
+                        </button>
+                        <form action="{{ url_for('modifier') }}?id={{ id }}" method="post">
+                            <button name="delete" value="true" class="hover" type="submit">Supprimer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if comments %}
+        <div class="grid-comment top">
+            {% for comment in comments %}
+                <div class="box">
+                    <p class="comment">{{ comment[0] }}</p>
+                    <p class="rate">{{ comment[1] }}/5</p>
+                </div>
+            {% endfor %}
+        </div>
     {% endif %}
-    {% if comment %}
-        <p>{{ data['comment'] }}</p>
-    {% endif %}
-    <a class="hover item margin button" href="{{ url_for('modifier') }}?id={{ data['id'] }}">Modifier</a>
+
+
+    </div>
 {% endblock %}
