@@ -6,7 +6,7 @@
     <div class="flex space">
         <div>
             <h1>{{ data['title'] }}</h1>
-            <p>{{ data['author'] }}, {{ data['year'] }}</p>
+            <p class="rate">{{ data['author'] }}, {{ data['year'] }}</p>
             {% if comments %}
                 <p>Note moyenne : {{ average }}/5</p>
             {% endif %}

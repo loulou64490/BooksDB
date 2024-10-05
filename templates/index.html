@@ -3,5 +3,30 @@
 {% block title %}BooksDB{% endblock %}
 
 {% block content %}
-    <p>Bienvenue</p>
+    <div class="grid-comment">
+        <div class="result">
+            <p class="name">Les mieux notés</p>
+            {% for i in rate %}
+                <a class="hover button" href="{{ url_for('livre') }}?id={{ i['id'] }}">{{ i['title'] }}
+                    par {{ i['author'] }}, {{ i['year'] }}</a>
+            {% endfor %}
+            <p class="name">Derniers ajoutés</p>
+            {% for i in recent %}
+                <a class="hover button" href="{{ url_for('livre') }}?id={{ i['id'] }}">{{ i['title'] }}
+                    par {{ i['author'] }}, {{ i['year'] }}</a>
+            {% endfor %}
+        </div>
+        <div class="result">
+            <p class="name">Les plus commentés</p>
+            {% for i in comment %}
+                <a class="hover button" href="{{ url_for('livre') }}?id={{ i['id'] }}">{{ i['title'] }}
+                    par {{ i['author'] }}, {{ i['year'] }}</a>
+            {% endfor %}
+            <p class="name">Derniers commentaires</p>
+            {% for i in last_comment %}
+                <a class="hover button" href="{{ url_for('livre') }}?id={{ i['id'] }}">{{ i['title'] }}
+                    par {{ i['author'] }}, {{ i['year'] }}</a>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

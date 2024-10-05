@@ -1,66 +1,49 @@
-document.oncontextmenu = function () { return false }
-window.ondragstart = function () { return false }
+document.oncontextmenu = function () {
+    return false
+}
+window.ondragstart = function () {
+    return false
+}
 
 const lightIcon = document.getElementById('lightIcon');
 const darkIcon = document.getElementById('darkIcon');
 
 // Fonction pour appliquer le bon thème et ajuster les icônes
 function applyTheme(theme) {
-  if (theme === 'dark') {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    lightIcon.classList.add('hidden');
-    darkIcon.classList.remove('hidden');
-  } else {
-    document.documentElement.removeAttribute('data-theme');
-    darkIcon.classList.add('hidden');
-    lightIcon.classList.remove('hidden');
-  }
+    document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light');
+    lightIcon.classList.toggle('hidden', theme === 'dark');
+    darkIcon.classList.toggle('hidden', theme !== 'dark');
 }
 
-// Charger le thème au chargement de la page et ajuster les icônes
-function loadTheme() {
-  const savedTheme = localStorage.getItem('theme');
-  const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-  if (savedTheme) {
-    applyTheme(savedTheme);
-  } else if (systemPrefersDark) {
-    applyTheme('dark');
-  } else {
-    applyTheme('light');
-  }
+// Charger le thème depuis le stockage ou selon la préférence système
+function getPreferredTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return savedTheme || (systemPrefersDark ? 'dark' : 'light');
 }
 
-// Gestionnaires d'événements pour alterner le thème et ajuster les icônes
-lightIcon.addEventListener('click', () => {
-  applyTheme('dark');
-  localStorage.setItem('theme', 'dark');
-});
+// Gestionnaire de clics pour alterner le thème et l'enregistrer
+function toggleTheme() {
+    const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    applyTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+}
 
-darkIcon.addEventListener('click', () => {
-  applyTheme('light');
-  localStorage.setItem('theme', 'light');
-});
+// Appliquer le thème au chargement de la page
+(function () {
+    applyTheme(getPreferredTheme());
 
-// Eviter le flash au chargement et afficher l'icône correcte
-(function() {
-  const savedTheme = localStorage.getItem('theme');
-  const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
-
-  // Appliquer le bon thème immédiatement et ajuster l'icône visible
-  if (theme === 'dark') {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    lightIcon.classList.add('hidden');
-    darkIcon.classList.remove('hidden');
-  } else {
-    document.documentElement.removeAttribute('data-theme');
-    darkIcon.classList.add('hidden');
-    lightIcon.classList.remove('hidden');
-  }
-
-  // Rendre la page visible après que le thème est appliqué
-  document.addEventListener('DOMContentLoaded', function() {
+    // Rendre la page visible après application du thème
     document.body.style.visibility = 'visible';
-  });
 })();
+
+// Ajout des gestionnaires d'événements
+lightIcon.addEventListener('click', toggleTheme);
+darkIcon.addEventListener('click', toggleTheme);
+
+
+window.addEventListener('load', function () {
+    let style = document.createElement('style');
+    style.innerHTML = `* { transition: background 0.3s;`;
+    document.head.appendChild(style);
+});

@@ -21,7 +21,8 @@
                 <a class="title" href="/">BookDB</a>
                 <form class="flex hover" action="{{ url_for('recherche') }}" method="post">
                     <label>
-                        <input autocomplete="off" type="text" name="query" placeholder="Rechercher">
+                        <input autocomplete="off" type="text" name="query" placeholder="Rechercher..."
+                               {% if result %}value="{{ result }}"{% endif %}>
                     </label>
                     <button type="submit">
                         <svg width="43" height="43" viewBox="0 0 43 43" fill="none" xmlns="http://www.w3.org/2000/svg">

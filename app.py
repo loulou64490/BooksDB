@@ -1,5 +1,6 @@
 import sqlite3
-# import ollama  # TODO: ajouter de l'ia
+import ollama
+
 from flask import Flask, render_template, request, redirect
 
 app = Flask(__name__)
@@ -24,13 +25,21 @@ def execute_query(query, params=(), fetchone=False, commit=False):
     return result
 
 
-# TODO: page d'accueil
-# livre mieux noté
-# livre le plus commenté
-# livre le plus récent
+# TODO: ajouter de l'ia
+# résumé commentaire
+# TODO: affichage mobile
+# TODO: suppression commentaire
+# compte commentaire
 @app.route('/')
 def accueil():
-    return render_template('index.html')
+    rate = execute_query(
+        "SELECT books.id, title, author, year, AVG(rating) as average FROM books LEFT JOIN comments ON books.id=comments.book_id GROUP BY books.id ORDER BY average DESC LIMIT 5", )
+    comment = execute_query(
+        "SELECT books.id, title, author, year, COUNT(comment) as count FROM books LEFT JOIN comments ON books.id=comments.book_id GROUP BY books.id ORDER BY count DESC LIMIT 5", )
+    recent = execute_query("SELECT * FROM books ORDER BY id DESC LIMIT 5", )
+    last_comment = execute_query(
+        "SELECT books.id, title, author, year, comment, rating FROM books LEFT JOIN comments ON books.id=comments.book_id ORDER BY comments.id DESC LIMIT 5", )
+    return render_template('index.html', rate=rate, comment=comment, recent=recent, last_comment=last_comment)
 
 
 @app.route('/livre')
@@ -40,7 +49,8 @@ def livre():
     if data:
         comments = execute_query("SELECT comment, rating FROM comments WHERE book_id=? ORDER BY id DESC", [book_id], )
         if comments:
-            average = round(execute_query("SELECT AVG(rating) FROM comments WHERE book_id=?", [book_id], fetchone=True)[0],1)
+            average = round(
+                execute_query("SELECT AVG(rating) FROM comments WHERE book_id=?", [book_id], fetchone=True)[0], 1)
             return render_template('livre.html', data=data, comments=comments, average=average)
         else:
             return render_template('livre.html', data=data)
@@ -57,7 +67,7 @@ def recherche():
             "SELECT * FROM books WHERE title LIKE ? OR author LIKE ? OR year LIKE ?",
             search_params
         )
-        if len(data)==1:
+        if len(data) == 1:
             return redirect(f"/livre?id={data[0]['id']}", 303)
         else:
             return render_template('recherche.html', data=data, result=query)
@@ -82,6 +92,7 @@ def handle_modification(book_id=None, delete=False):
         book_id = cur.lastrowid
     return book_id
 
+
 @app.route('/modifier', methods=['POST'])
 def modifier():
     book_id = request.args.get('id')
@@ -91,6 +102,7 @@ def modifier():
     else:
         book_id = handle_modification(book_id)
         return redirect(f"/livre?id={book_id}", 303)
+
 
 @app.route('/commenter', methods=['POST'])
 def commenter():
