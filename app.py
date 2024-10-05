@@ -38,17 +38,14 @@ def accueil():
 @app.route('/livre')
 def livre():
     book_id = request.args.get('id')
-    if book_id:
-        data = execute_query("SELECT * FROM books WHERE id=?", [book_id], fetchone=True)
-        if data:
-            comments = execute_query("SELECT comment, rating FROM comments WHERE book_id=?", [book_id], )
-            if comments:
-                average = execute_query("SELECT AVG(rating) FROM comments WHERE book_id=?", [book_id], fetchone=True)
-                return render_template('livre.html', data=data, comments=comments, average=average)
-            else:
-                return render_template('livre.html', data=data)
+    data = execute_query("SELECT * FROM books WHERE id=?", [book_id], fetchone=True)
+    if data:
+        comments = execute_query("SELECT comment, rating FROM comments WHERE book_id=? ORDER BY id DESC", [book_id], )
+        if comments:
+            average = round(execute_query("SELECT AVG(rating) FROM comments WHERE book_id=?", [book_id], fetchone=True)[0],1)
+            return render_template('livre.html', data=data, comments=comments, average=average)
         else:
-            return redirect("/recherche", 303)
+            return render_template('livre.html', data=data)
     else:
         return redirect("/recherche", 303)
 
@@ -84,23 +81,25 @@ def handle_modification(book_id=None, delete=False):
         book_id = cur.lastrowid
     return book_id
 
-
-@app.route('/modifier', methods=['POST', 'GET'])
+@app.route('/modifier', methods=['POST'])
 def modifier():
     book_id = request.args.get('id')
+    if 'delete' in request.form:
+        handle_modification(book_id, delete=True)
+        return redirect("/", 303)
+    else:
+        book_id = handle_modification(book_id)
+        return redirect(f"/livre?id={book_id}", 303)
 
-    if request.method == 'POST':
-        if 'delete' in request.form:
-            handle_modification(book_id, delete=True)
-            return redirect("/", 303)
-        else:
-            book_id = handle_modification(book_id)
-            return redirect(f"/livre?id={book_id}", 303)
-
-    if book_id:
-        data = execute_query("SELECT title, author, year FROM books WHERE id=?", [book_id], fetchone=True)
-        return render_template('modifier.html', data=data, id=book_id)
-    return render_template('modifier.html')
+@app.route('/commenter', methods=['POST'])
+def commenter():
+    book_id = request.args.get('id')
+    execute_query(
+        "INSERT INTO comments (book_id, comment, rating) VALUES (?, ?, ?)",
+        [book_id, request.form['comment'], request.form['rating']],
+        commit=True
+    )
+    return redirect(f"/livre?id={book_id}", 303)
 
 
 if __name__ == '__main__':

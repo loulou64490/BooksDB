@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ data['title'] }} - BookDB{% endblock %}
+{% block title %}{{ data['title'] }} - BooksDB{% endblock %}
 
 {% block content %}
     <div class="flex space">
@@ -8,24 +8,13 @@
             <h1>{{ data['title'] }}</h1>
             <p>{{ data['author'] }}, {{ data['year'] }}</p>
             {% if comments %}
-                <p>Note moyenne : {{ average[0] }}/5</p>
+                <p>Note moyenne : {{ average }}/5</p>
             {% endif %}
         </div>
         <div class="flex">
-            <a class="hover button" href="{{ url_for('modifier') }}?id={{ data['id'] }}">Modifier</a>
+            <button class="hover" onclick="document.getElementById('comment').style.display = 'flex'">Commenter</button>
+            <button class="hover" onclick="document.getElementById('modify').style.display = 'flex'">Modifier</button>
             <button class="hover" onclick="document.getElementById('delete').style.display = 'flex'">Supprimer</button>
-            <div class="popup-bg" id="delete">
-                <div class="popup">
-                    <p>Voulez-vous vraiment supprimer {{ data['title'] }} ?</p>
-                    <div class="flex top">
-                        <button class="hover" onclick="document.getElementById('delete').style.display = 'none'">Annuler
-                        </button>
-                        <form action="{{ url_for('modifier') }}?id={{ id }}" method="post">
-                            <button name="delete" value="true" class="hover" type="submit">Supprimer</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
     {% if comments %}
@@ -38,7 +27,63 @@
             {% endfor %}
         </div>
     {% endif %}
-
-
+    <div class="popup-bg" id="delete">
+        <div class="popup">
+            <p>Voulez-vous vraiment supprimer {{ data['title'] }} ?</p>
+            <div class="flex">
+                <button class="hover" onclick="document.getElementById('delete').style.display = 'none'">Annuler
+                </button>
+                <form action="{{ url_for('modifier') }}?id={{ data['id'] }}" method="post">
+                    <button name="delete" value="true" class="hover" type="submit">Supprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="popup-bg" id="comment">
+        <div class="popup">
+            <p>Commenter {{ data['title'] }}</p>
+            <div class="">
+                <form class="" action="{{ url_for('commenter') }}?id={{ data['id'] }}" method="post">
+                    <label>
+                        <span>Commentaire</span>
+                        <textarea name="comment" placeholder="Commentaire" required></textarea>
+                    </label>
+                    <label>
+                        <span>Note</span>
+                        <input type="number" name="rating" placeholder="/5" min="0" max="5" required>
+                    </label>
+                    <button class="hover" onclick="document.getElementById('comment').style.display = 'none'">Annuler
+                    </button>
+                    <button class="hover" type="submit">Commenter</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="popup-bg" id="modify">
+        <div class="popup">
+            <p>Modifier {{ data['title'] }}</p>
+            <form class="" action="{{ url_for('modifier') }}?id={{ data['id'] }}"
+                  method="post">
+                <label>
+                    <span>Titre</span>
+                    <input type="text" name="title" value="{{ data['title'] }}"
+                           placeholder="{{ data['title'] }}" required>
+                </label>
+                <label>
+                    <span>Auteur</span>
+                    <input type="text" name="author" value="{{ data['author'] }}"
+                           placeholder="{{ data['author'] }}" required>
+                </label>
+                <label>
+                    <span>Année</span>
+                    <input type="number" name="year" value="{{ data['year'] }}"
+                           placeholder="{{ data['year'] }}" required>
+                </label>
+                <button class="hover" onclick="document.getElementById('modify').style.display = 'none'">
+                    Annuler
+                </button>
+                <button class="hover" type="submit">Modifier</button>
+            </form>
+        </div>
     </div>
 {% endblock %}

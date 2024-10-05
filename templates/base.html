@@ -33,8 +33,9 @@
                 </form>
             </li>
             <li class="flex">
-                <a class="ajouter hover" href="{{ url_for('modifier') }}">Ajouter un livre</a>
-                <div id="iconContainer" class="flex cursor">
+                    <button class="hover" onclick="document.getElementById('add').style.display = 'flex'">
+                        Ajouter
+                    </button>                <div id="iconContainer" class="flex cursor">
                     <img id="lightIcon" src="{{ url_for('static', filename='images/moon.svg') }}" alt="Thème clair"
                          class="theme-icon">
                     <img id="darkIcon" src="{{ url_for('static', filename='images/sun.svg') }}" alt="Thème sombre"
@@ -48,14 +49,38 @@
 <main class="container">
     <div class="content">
         {% block content %}{% endblock %}
+        <div class="popup-bg" id="add">
+            <div class="popup">
+                <p>Ajouter un livre</p>
+                <form class="" action="{{ url_for('modifier') }}"
+                      method="post">
+                    <label>
+                        <span>Titre</span>
+                        <input type="text" name="title" required>
+                    </label>
+                    <label>
+                        <span>Auteur</span>
+                        <input type="text" name="author" required>
+                    </label>
+                    <label>
+                        <span>Année</span>
+                        <input type="number" name="year" required>
+                    </label>
+                    <button class="hover" onclick="document.getElementById('add').style.display = 'none'">
+                        Annuler
+                    </button>
+                    <button class="hover" type="submit">Ajouter</button>
+                </form>
+            </div>
+        </div>
     </div>
 </main>
 
 <footer class="flex">
     <div class="container">
         <p>&copy; 2024 Louis Chauvet-Villaret</p>
-        &bullet;<a href="https://github.com/loulou64490/BookDB">Github</a>
-{#        &bullet;<a href="https://www.instagram.com/loulou64490">Instagram</a>#}
+        &bullet;<a href="https://github.com/loulou64490/BooksDB">Github</a>
+        {#        &bullet;<a href="https://www.instagram.com/loulou64490">Instagram</a>#}
     </div>
 </footer>
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
