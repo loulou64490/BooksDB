@@ -5,23 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
-    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
 <header>
     <nav class="container">
-        <ul class="flex">
-            <li class="flex">
+        <div class="flex space">
+            <div class="flex">
                 <a class="title" href="/">BookDB</a>
                 <form class="flex hover" action="{{ url_for('recherche') }}" method="post">
                     <label>
-                        <input type="text" name="query" placeholder="Rechercher">
+                        <input autocomplete="off" type="text" name="query" placeholder="Rechercher">
                     </label>
                     <button type="submit">
                         <svg width="43" height="43" viewBox="0 0 43 43" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -31,18 +31,23 @@
                         </svg>
                     </button>
                 </form>
-            </li>
-            <li class="flex">
-                    <button class="hover" onclick="document.getElementById('add').style.display = 'flex'">
-                        Ajouter
-                    </button>                <div id="iconContainer" class="flex cursor">
-                    <img id="lightIcon" src="{{ url_for('static', filename='images/moon.svg') }}" alt="Thème clair"
-                         class="theme-icon">
-                    <img id="darkIcon" src="{{ url_for('static', filename='images/sun.svg') }}" alt="Thème sombre"
-                         class="theme-icon hidden">
+            </div>
+            <div class="flex">
+                <button class="hover button" onclick="document.getElementById('add').style.display = 'flex'">
+                    Ajouter
+                </button>
+                <div id="iconContainer" class="flex cursor">
+                    <svg id="lightIcon" class="theme-icon" xmlns="http://www.w3.org/2000/svg" height="40px"
+                         viewBox="0 -960 960 960" width="40px">
+                        <path d="M484-80q-84 0-157.5-32t-128-86.5Q144-253 112-326.5T80-484q0-146 93-257.5T410-880q-18 98.33 11 192.92 29 94.59 100 165.66t165.5 100.1Q781-392.3 880-410.31q-26 144.13-138 237.22T484-80Zm0-66.67q96 0 175.67-52.66Q739.33-252 787-336.33q-88.67-8-169.67-42.17-81-34.17-143.66-96.5Q411-537.33 377-618t-41.67-168.67q-84.33 46.34-136.5 126.5Q146.67-580 146.67-484q0 140.56 98.39 238.94 98.38 98.39 238.94 98.39ZM473.33-475Z"></path>
+                    </svg>
+                    <svg id="darkIcon" class="theme-icon hidden" xmlns="http://www.w3.org/2000/svg" height="40px"
+                         viewBox="0 -960 960 960" width="40px">
+                        <path d="M480.67-28.67 346-160H160v-186L26.67-480 160-614v-186h186l134.67-133.33L614-800h186v186l133.33 134L800-346v186H614L480.67-28.67ZM480.7-284q81.63 0 139.13-57.54 57.5-57.53 57.5-139.16T619.8-619.83q-57.54-57.5-139.17-57.5T341.5-619.8Q284-562.26 284-480.63t57.54 139.13Q399.07-284 480.7-284Zm-.03-196.67Zm0 358.67 105.27-104.67h147.39V-374l106-106-106-106v-147.33H586l-105.33-106-106.67 106H226.67V-586l-106 106 106 106v147.33h146.66L480.67-122ZM480-480.67Z"></path>
+                    </svg>
                 </div>
-            </li>
-        </ul>
+            </div>
+        </div>
     </nav>
 </header>
 
@@ -50,28 +55,28 @@
     <div class="content">
         {% block content %}{% endblock %}
         <div class="popup-bg" id="add">
-            <div class="popup">
-                <p>Ajouter un livre</p>
-                <form class="" action="{{ url_for('modifier') }}"
-                      method="post">
-                    <label>
-                        <span>Titre</span>
-                        <input type="text" name="title" required>
-                    </label>
-                    <label>
-                        <span>Auteur</span>
-                        <input type="text" name="author" required>
-                    </label>
-                    <label>
-                        <span>Année</span>
-                        <input type="number" name="year" required>
-                    </label>
+            <form class="popup result" action="{{ url_for('modifier') }}"
+                  method="post">
+                <p class="name">Ajouter un livre</p>
+                <label>
+                    <span>Titre</span>
+                    <input type="text" name="title" required>
+                </label>
+                <label>
+                    <span>Auteur</span>
+                    <input type="text" name="author" required>
+                </label>
+                <label>
+                    <span>Année</span>
+                    <input type="number" name="year" required>
+                </label>
+                <div class="flex">
                     <button class="hover" onclick="document.getElementById('add').style.display = 'none'">
                         Annuler
                     </button>
                     <button class="hover" type="submit">Ajouter</button>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 </main>
@@ -83,7 +88,7 @@
         {#        &bullet;<a href="https://www.instagram.com/loulou64490">Instagram</a>#}
     </div>
 </footer>
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 
 </html>

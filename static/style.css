@@ -1,6 +1,11 @@
 :root {
-    --primary: 0,0,0;
-    --bg: 255,255,255;
+    --primary: 31,35,40;
+    --secondary: 255,255,255;
+}
+
+[data-theme="dark"] {
+    --primary: 240,247,253;
+    --secondary: 12, 16, 23;
 }
 
 * {
@@ -8,17 +13,18 @@
     padding: 0;
     box-sizing: border-box;
     user-select: none;
+    font-family: "Onest", system-ui;
 }
 
 body, html {
     overflow-x: hidden;
     scroll-behavior: smooth;
-    font-family: "Onest", system-ui;
     font-optical-sizing: auto;
     font-style: normal;
-    background: rgb(var(--bg));
+    background: rgb(var(--secondary));
     color: rgb(var(--primary));
     cursor: auto;
+    visibility: hidden;
 }
 
 .top{
@@ -73,13 +79,8 @@ header {
     left: 0;
     right: 0;
     z-index: 1000;
-    background: rgb(var(--bg));
+    background: rgb(var(--secondary));
     box-shadow: 0 2px 0 rgb(var(--primary));
-}
-
-ul {
-    list-style: none;
-    justify-content: space-between;
 }
 
 header .title {
@@ -94,7 +95,6 @@ header a img {
 }
 
 input, textarea {
-    font-family: "Onest", system-ui;
     background: none;
     padding: 0.6rem;
     font-size: 1rem;
@@ -105,18 +105,13 @@ input, textarea {
 input:focus {
     outline: none;
 }
-
-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.2rem;
-    color: rgb(var(--primary));
-}
-
 button svg {
     height: 2rem;
     width: auto;
+}
+
+#iconContainer svg{
+    fill: rgb(var(--primary));
 }
 
 button path {
@@ -140,23 +135,22 @@ main h1 {
     gap: 0 1rem;
 }
 
-.comment {
-    width: 100%;
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgb(var(--primary));
+    font-size: 1rem;
+    padding: 0.6rem;
 }
 
-main button {
-    font-size: 1rem;
-    font-family: "Onest", system-ui;
-    padding: 0.6rem;
+header button{
+    padding: 0.2rem;
 }
 
 main label {
     display: flex;
     flex-direction: column;
-}
-
-.blip {
-    gap: 3rem;
 }
 
 main textarea, main input {
@@ -200,14 +194,14 @@ footer div {
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(var(--bg), 0.7);
+    background: rgba(var(--secondary), 0.7);
     display: none;
     justify-content: center;
     align-items: center;
 }
 
 .popup {
-    background: rgb(var(--bg));
+    background: rgb(var(--secondary));
     width: fit-content;
     padding: 1rem;
     border: 2px solid rgb(var(--primary));
@@ -232,4 +226,8 @@ footer div {
 
 .space{
     justify-content: space-between;
+}
+
+.name{
+    font-size: 1.8rem;
 }

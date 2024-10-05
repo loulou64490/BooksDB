@@ -5,14 +5,9 @@ from flask import Flask, render_template, request, redirect
 app = Flask(__name__)
 
 
-def get_db_connection():
+def execute_query(query, params=(), fetchone=False, commit=False):
     conn = sqlite3.connect('books.db')
     conn.row_factory = sqlite3.Row
-    return conn
-
-
-def execute_query(query, params=(), fetchone=False, commit=False):
-    conn = get_db_connection()
     cur = conn.cursor()
     try:
         cur.execute(query, params)
@@ -30,6 +25,9 @@ def execute_query(query, params=(), fetchone=False, commit=False):
 
 
 # TODO: page d'accueil
+# livre mieux noté
+# livre le plus commenté
+# livre le plus récent
 @app.route('/')
 def accueil():
     return render_template('index.html')
@@ -59,7 +57,10 @@ def recherche():
             "SELECT * FROM books WHERE title LIKE ? OR author LIKE ? OR year LIKE ?",
             search_params
         )
-        return render_template('recherche.html', data=data, result=query)
+        if len(data)==1:
+            return redirect(f"/livre?id={data[0]['id']}", 303)
+        else:
+            return render_template('recherche.html', data=data, result=query)
     return render_template('recherche.html')
 
 
