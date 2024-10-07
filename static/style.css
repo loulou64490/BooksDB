@@ -1,11 +1,11 @@
 :root {
-    --primary: 31,35,40;
+    --primary: 31, 35, 40;
     --bg2: 229, 236, 255;
     --bg: 246, 249, 255;
 }
 
 [data-theme="dark"] {
-    --primary: 240,247,253;
+    --primary: 240, 247, 253;
     --bg2: 0, 0, 0;
     --bg: 12, 16, 23;
 }
@@ -29,7 +29,7 @@ body, html {
     visibility: hidden;
 }
 
-.top{
+.top {
     margin-top: 2rem;
 }
 
@@ -107,12 +107,13 @@ input, textarea {
 input:focus {
     outline: none;
 }
+
 button svg {
     height: 2rem;
     width: auto;
 }
 
-#iconContainer svg{
+#iconContainer svg {
     fill: rgb(var(--primary));
 }
 
@@ -146,7 +147,7 @@ button {
     padding: 0.6rem;
 }
 
-header button{
+header button {
     padding: 0.2rem;
 }
 
@@ -168,7 +169,7 @@ main textarea:focus {
     outline: none;
 }
 
-.button{
+.button {
     padding: 0.6rem;
 }
 
@@ -216,20 +217,60 @@ footer div {
 }
 
 .box {
-    padding: 1rem;
+    padding: 1rem 0 1rem 1rem;
     border: 2px solid rgb(var(--primary));
     display: flex;
     gap: 1rem;
 }
 
-.rate{
+.rate {
     font-size: 1.2rem;
 }
 
-.space{
+.space {
     justify-content: space-between;
 }
 
-.name{
+.name {
     font-size: 1.8rem;
 }
+
+.menu-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 2rem;
+    height: 20px;
+    cursor: pointer;
+}
+
+.box:hover .square, .flex2 {
+    display: flex;
+}
+
+.square {
+    display: none;
+    width: 4px;
+    height: 4px;
+    background-color: rgb(var(--primary));
+}
+
+.menu-bg{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.menu {
+    position: absolute;
+    background: rgb(var(--bg));
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    border: 2px solid rgb(var(--primary));
+}
+

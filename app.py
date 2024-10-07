@@ -30,6 +30,7 @@ def execute_query(query, params=(), fetchone=False, commit=False):
 # TODO: affichage mobile
 # TODO: suppression commentaire
 # compte commentaire
+# TODO: recherche avancée
 @app.route('/')
 def accueil():
     rate = execute_query(
@@ -47,10 +48,11 @@ def livre():
     book_id = request.args.get('id')
     data = execute_query("SELECT * FROM books WHERE id=?", [book_id], fetchone=True)
     if data:
-        comments = execute_query("SELECT comment, rating FROM comments WHERE book_id=? ORDER BY id DESC", [book_id], )
+        comments = execute_query("SELECT * FROM comments WHERE book_id=? ORDER BY id DESC", [book_id], )
         if comments:
-            average = round(
-                execute_query("SELECT AVG(rating) FROM comments WHERE book_id=?", [book_id], fetchone=True)[0], 1)
+            average = round(execute_query("SELECT AVG(rating) FROM comments WHERE book_id=?", [book_id], fetchone=True)[0],1)
+            if average.is_integer():
+                average = int(average)
             return render_template('livre.html', data=data, comments=comments, average=average)
         else:
             return render_template('livre.html', data=data)
@@ -107,12 +109,29 @@ def modifier():
 @app.route('/commenter', methods=['POST'])
 def commenter():
     book_id = request.args.get('id')
-    execute_query(
-        "INSERT INTO comments (book_id, comment, rating) VALUES (?, ?, ?)",
-        [book_id, request.form['comment'], request.form['rating']],
-        commit=True
-    )
-    return redirect(f"/livre?id={book_id}", 303)
+    if 'delete' in request.form:
+        execute_query("DELETE FROM comments WHERE id=?", [request.form['delete']], commit=True)
+        return redirect(f"/livre?id={book_id}", 303)
+    elif 'signal' in request.form:
+        execute_query(
+            "UPDATE comments SET signal=signal+1 WHERE id=?",
+            [request.form['signal']],
+            commit=True
+        )
+        signal=execute_query("SELECT signal FROM comments WHERE id=?", [request.form['signal']], fetchone=True)[0]
+        if signal>5:
+            execute_query("DELETE FROM comments WHERE id=?", [request.form['signal']], commit=True)
+        return redirect(f"/livre?id={book_id}", 303)
+    elif 'modify' in request.form:
+        execute_query("UPDATE comments SET comment=?, rating=? WHERE id=?", [request.form['comment'], request.form['rating'], request.form['modify']], commit=True)
+        return redirect(f"/livre?id={book_id}", 303)
+    else:
+        execute_query(
+            "INSERT INTO comments (book_id, comment, rating) VALUES (?, ?, ?)",
+            [book_id, request.form['comment'], request.form['rating']],
+            commit=True
+        )
+        return redirect(f"/livre?id={book_id}", 303)
 
 
 if __name__ == '__main__':

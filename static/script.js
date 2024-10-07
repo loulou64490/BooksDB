@@ -1,3 +1,4 @@
+// Empêcher la sélection et le déplacement
 document.oncontextmenu = function () {
     return false
 }
@@ -41,7 +42,7 @@ function toggleTheme() {
 lightIcon.addEventListener('click', toggleTheme);
 darkIcon.addEventListener('click', toggleTheme);
 
-
+// Éviter le flash de transition de thème au chargement
 window.addEventListener('load', function () {
     let style = document.createElement('style');
     style.innerHTML = `* { transition: background 0.3s;`;

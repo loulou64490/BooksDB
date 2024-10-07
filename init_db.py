@@ -19,7 +19,8 @@ def init_db(add_books=False):
                                 on delete cascade,
                         comment TEXT    not null,
                         rating  INTEGER not null,
-                        check (rating >= 1 AND rating <= 5)
+                        signal INTEGER default 0,
+                        check (rating >= 0 AND rating <= 5)
                     );''')
     if add_books:
         cur.executemany("insert into books(title,author,year) values(?, ?, ?)", [

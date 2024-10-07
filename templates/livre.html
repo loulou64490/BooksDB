@@ -7,11 +7,11 @@
         <div>
             <h1>{{ data['title'] }}</h1>
             <p class="rate">{{ data['author'] }}, {{ data['year'] }}</p>
-            {% if comments %}
-                <p>Note moyenne : {{ average }}/5</p>
-            {% endif %}
         </div>
         <div class="flex">
+            {% if comments %}
+                <p class="name">{{ average }}/5</p>
+            {% endif %}
             <button class="hover" onclick="document.getElementById('comment').style.display = 'flex'">Commenter</button>
             <button class="hover" onclick="document.getElementById('modify').style.display = 'flex'">Modifier</button>
             <button class="hover" onclick="document.getElementById('delete').style.display = 'flex'">Supprimer</button>
@@ -21,8 +21,31 @@
         <div class="grid-comment top">
             {% for comment in comments %}
                 <div class="box space">
-                    <p class="comment">{{ comment[0] }}</p>
-                    <p class="rate">{{ comment[1] }}/5</p>
+                    <p class="comment">{{ comment['comment'] }}</p>
+                    <div class="flex2">
+                        <p class="rate">{{ comment['rating'] }}/5</p>
+                        <div class="menu-button"
+                             onclick="document.getElementById('comm{{ comment['id'] }}').style.display = 'flex'">
+                            <div class="square"></div>
+                            <div class="square"></div>
+                            <div class="square"></div>
+                        </div>
+                        <div id="comm{{ comment['id'] }}" class="hidden">
+                            <div class="menu-bg"
+                                 onclick="document.getElementById('comm{{ comment['id'] }}').style.display = 'none'"></div>
+                            <form class="menu" action="{{ url_for('commenter') }}?id={{ data['id'] }}" method="post">
+                                <button name="signal" value="{{ comment['id'] }}" class="hover" type="submit">
+                                    Signaler
+                                </button>
+                                <button name="modify" value="{{ comment['id'] }}" class="hover" type="submit">
+                                    Modifier
+                                </button>
+                                <button name="delete" value="{{ comment['id'] }}" class="hover" type="submit">
+                                    Supprimer
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             {% endfor %}
         </div>
@@ -39,10 +62,10 @@
                 <input type="number" name="rating" placeholder="/5" min="0" max="5" required>
             </label>
             <div class="flex">
-                <button class="hover" onclick="document.getElementById('comment').style.display = 'none'">
+                <button type="button" class="hover" onclick="document.getElementById('comment').style.display = 'none'">
                     Annuler
                 </button>
-                <button class="hover" type="submit">Commenter</button>
+                <button value="true" class="hover" type="submit">Supprimer</button>
             </div>
         </form>
     </div>
@@ -66,7 +89,8 @@
                        placeholder="{{ data['year'] }}" required>
             </label>
             <div class="flex">
-                <button class="hover" onclick="document.getElementById('modify').style.display = 'none'">Annuler
+                <button class="hover" type="button" onclick="document.getElementById('modify').style.display = 'none'">
+                    Annuler
                 </button>
                 <button class="hover" type="submit">Modifier</button>
             </div>
@@ -79,7 +103,7 @@
                 <button class="hover" onclick="document.getElementById('delete').style.display = 'none'">Annuler
                 </button>
                 <form action="{{ url_for('modifier') }}?id={{ data['id'] }}" method="post">
-                    <button name="delete" value="true" class="hover" type="submit">Supprimer</button>
+                    <button name="delete" class="hover" type="submit">Supprimer</button>
                 </form>
             </div>
         </div>
