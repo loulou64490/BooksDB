@@ -18,6 +18,10 @@
     font-family: "Onest", system-ui;
 }
 
+*:focus {
+    outline: none;
+}
+
 body, html {
     overflow-x: hidden;
     scroll-behavior: smooth;
@@ -66,13 +70,19 @@ footer a:hover {
     gap: 1rem;
 }
 
-*:focus, .hover {
+.hover {
     outline: 2px solid rgb(var(--primary));
+    transition: transform 0.1s, box-shadow 0.1s;
 }
 
 .hover:hover {
     transform: translate(-1px, -1px);
     box-shadow: 4px 4px 0 rgb(var(--primary));
+}
+
+.hover:active{
+    transform: translate(1px, 1px);
+    box-shadow: 0 0 0 rgb(var(--primary));
 }
 
 header {
@@ -104,10 +114,6 @@ input, textarea {
     color: rgb(var(--primary));
 }
 
-input:focus {
-    outline: none;
-}
-
 button svg {
     height: 2rem;
     width: auto;
@@ -130,6 +136,11 @@ button path {
 main h1 {
     font-size: 2rem;
     font-weight: normal;
+}
+
+main img{
+    width: 100%;
+    height: auto;
 }
 
 .grid {
@@ -163,10 +174,6 @@ main textarea, main input {
 main textarea {
     resize: none;
     height: 6rem;
-}
-
-main textarea:focus {
-    outline: none;
 }
 
 .button {

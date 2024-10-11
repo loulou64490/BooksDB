@@ -1,7 +1,7 @@
 import sqlite3
-import ollama
-
-from flask import Flask, render_template, request, redirect
+#import ollama
+from flask import Flask, render_template, request, redirect, url_for
+#import flask_login
 
 app = Flask(__name__)
 
@@ -28,9 +28,8 @@ def execute_query(query, params=(), fetchone=False, commit=False):
 # TODO: ajouter de l'ia
 # résumé commentaire
 # TODO: affichage mobile
-# TODO: suppression commentaire
-# compte commentaire
 # TODO: recherche avancée
+# TODO: mot de passe édition ou suppression commentaire et livre
 @app.route('/')
 def accueil():
     rate = execute_query(
@@ -50,7 +49,8 @@ def livre():
     if data:
         comments = execute_query("SELECT * FROM comments WHERE book_id=? ORDER BY id DESC", [book_id], )
         if comments:
-            average = round(execute_query("SELECT AVG(rating) FROM comments WHERE book_id=?", [book_id], fetchone=True)[0],1)
+            average = round(
+                execute_query("SELECT AVG(rating) FROM comments WHERE book_id=?", [book_id], fetchone=True)[0], 1)
             if average.is_integer():
                 average = int(average)
             return render_template('livre.html', data=data, comments=comments, average=average)
@@ -118,12 +118,13 @@ def commenter():
             [request.form['signal']],
             commit=True
         )
-        signal=execute_query("SELECT signal FROM comments WHERE id=?", [request.form['signal']], fetchone=True)[0]
-        if signal>5:
+        signal = execute_query("SELECT signal FROM comments WHERE id=?", [request.form['signal']], fetchone=True)[0]
+        if signal > 5:
             execute_query("DELETE FROM comments WHERE id=?", [request.form['signal']], commit=True)
         return redirect(f"/livre?id={book_id}", 303)
     elif 'modify' in request.form:
-        execute_query("UPDATE comments SET comment=?, rating=? WHERE id=?", [request.form['comment'], request.form['rating'], request.form['modify']], commit=True)
+        execute_query("UPDATE comments SET comment=?, rating=? WHERE id=?",
+                      [request.form['comment'], request.form['rating'], request.form['modify']], commit=True)
         return redirect(f"/livre?id={book_id}", 303)
     else:
         execute_query(
