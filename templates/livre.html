@@ -12,9 +12,9 @@
             {% if comments %}
                 <p class="name">{{ average }}/5</p>
             {% endif %}
-            <button class="hover" onclick="document.getElementById('comment').style.display = 'flex'">Commenter</button>
-            <button class="hover" onclick="document.getElementById('modify').style.display = 'flex'">Modifier</button>
-            <button class="hover" onclick="document.getElementById('delete').style.display = 'flex'">Supprimer</button>
+            <button class="hover" onclick="updateDisplay('comment','flex')">Commenter</button>
+            <button class="hover" onclick="updateDisplay('modify','flex')">Modifier</button>
+            <button class="hover" onclick="updateDisplay('delete','flex')">Supprimer</button>
         </div>
     </div>
     {% if comments %}
@@ -25,19 +25,21 @@
                     <div class="flex2">
                         <p class="rate">{{ comment['rating'] }}/5</p>
                         <div class="menu-button"
-                             onclick="document.getElementById('comm{{ comment['id'] }}').style.display = 'flex'">
+                             onclick="updateDisplay('comm{{ comment['id'] }}','flex')">
                             <div class="square"></div>
                             <div class="square"></div>
                             <div class="square"></div>
                         </div>
                         <div id="comm{{ comment['id'] }}" class="hidden">
                             <div class="menu-bg"
-                                 onclick="document.getElementById('comm{{ comment['id'] }}').style.display = 'none'"></div>
+                                 onclick="updateDisplay('comm{{ comment['id'] }}','none')"></div>
                             <form class="menu" action="{{ url_for('commenter') }}?id={{ data['id'] }}" method="post">
                                 <button name="signal" value="{{ comment['id'] }}" class="hover" type="submit">
                                     Signaler
                                 </button>
-                                <button name="modify" value="{{ comment['id'] }}" class="hover" type="submit">
+                                <button class="hover"
+                                        onclick="updateDisplay('mod{{ comment['id'] }}','flex');updateDisplay('comm{{ comment['id'] }}','none')"
+                                        type="button">
                                     Modifier
                                 </button>
                                 <button name="delete" value="{{ comment['id'] }}" class="hover" type="submit">
@@ -47,6 +49,32 @@
                         </div>
                     </div>
                 </div>
+                <form class="popup-bg" id="mod{{ comment['id'] }}"
+                      action="{{ url_for('commenter') }}?id={{ data['id'] }}" method="post">
+                    <div class="popup result">
+                        <p class="name">Modifier le commentaire</p>
+                        <label>
+                            <span>Commentaire</span>
+                            <textarea name="comment" required>{{ comment['comment'] }}</textarea>
+                        </label>
+                        <label>
+                            <span>Note</span>
+                            <input type="number" name="rating" value="{{ comment['rating'] }}"
+                                   placeholder="/5" min="0" max="5"
+                                   required>
+                        </label>
+                        <div class="flex">
+                            <button class="hover" type="button"
+                                    onclick="updateDisplay('mod{{ comment['id'] }}','none')">
+                                Annuler
+                            </button>
+                            <button name="modify" value="{{ comment['id'] }}" class="hover"
+                                    type="submit">
+                                Modifier
+                            </button>
+                        </div>
+                    </div>
+                </form>
             {% endfor %}
         </div>
     {% endif %}
@@ -62,7 +90,7 @@
                 <input type="number" name="rating" placeholder="/5" min="0" max="5" required>
             </label>
             <div class="flex">
-                <button type="button" class="hover" onclick="document.getElementById('comment').style.display = 'none'">
+                <button type="button" class="hover" onclick="updateDisplay('comment','none')">
                     Annuler
                 </button>
                 <button value="true" class="hover" type="submit">Supprimer</button>
@@ -89,7 +117,7 @@
                        placeholder="{{ data['year'] }}" required>
             </label>
             <div class="flex">
-                <button class="hover" type="button" onclick="document.getElementById('modify').style.display = 'none'">
+                <button class="hover" type="button" onclick="updateDisplay('modify','none')">
                     Annuler
                 </button>
                 <button class="hover" type="submit">Modifier</button>
@@ -100,7 +128,7 @@
         <div class="popup result">
             <p>Voulez-vous vraiment supprimer {{ data['title'] }} ?</p>
             <div class="flex">
-                <button class="hover" onclick="document.getElementById('delete').style.display = 'none'">Annuler
+                <button class="hover" onclick="updateDisplay('delete','none')">Annuler
                 </button>
                 <form action="{{ url_for('modifier') }}?id={{ data['id'] }}" method="post">
                     <button name="delete" class="hover" type="submit">Supprimer</button>

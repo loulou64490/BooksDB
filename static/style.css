@@ -30,7 +30,6 @@ body, html {
     background: rgb(var(--bg));
     color: rgb(var(--primary));
     cursor: auto;
-    visibility: hidden;
 }
 
 .top {

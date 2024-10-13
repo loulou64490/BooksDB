@@ -30,21 +30,27 @@ function toggleTheme() {
     localStorage.setItem('theme', newTheme);
 }
 
-// Appliquer le thème au chargement de la page
-(function () {
-    applyTheme(getPreferredTheme());
+applyTheme(getPreferredTheme());
 
-    // Rendre la page visible après application du thème
-    document.body.style.visibility = 'visible';
-})();
+// Appliquer le thème au chargement de la page
+// (function () {
+//     applyTheme(getPreferredTheme());
+//
+//     // Rendre la page visible après application du thème
+//     document.body.style.visibility = 'visible';
+// })();
 
 // Ajout des gestionnaires d'événements
 lightIcon.addEventListener('click', toggleTheme);
 darkIcon.addEventListener('click', toggleTheme);
 
 // Éviter le flash de transition de thème au chargement
-window.addEventListener('load', function () {
-    let style = document.createElement('style');
-    style.innerHTML = `* { transition: background 0.3s;`;
-    document.head.appendChild(style);
-});
+// window.addEventListener('load', function () {
+//     let style = document.createElement('style');
+//     style.innerHTML = `* { transition: background 0.3s;`;
+//     document.head.appendChild(style);
+// });
+
+function updateDisplay(id, value) {
+    document.getElementById(id).style.display = value;
+}

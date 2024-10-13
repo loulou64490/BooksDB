@@ -1,7 +1,8 @@
 import sqlite3
-#import ollama
 from flask import Flask, render_template, request, redirect, url_for
-#import flask_login
+
+# import ollama
+# import flask_login
 
 app = Flask(__name__)
 
@@ -29,7 +30,10 @@ def execute_query(query, params=(), fetchone=False, commit=False):
 # résumé commentaire
 # TODO: affichage mobile
 # TODO: recherche avancée
-# TODO: mot de passe édition ou suppression commentaire et livre
+# TODO: modification commentaire
+# TODO: améliorer page d'accueil
+# dernier commentaire : afficher
+# hero image
 @app.route('/')
 def accueil():
     rate = execute_query(
