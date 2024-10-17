@@ -22,6 +22,7 @@ def init_db(add_books=False):
                         signal INTEGER default 0,
                         check (rating >= 0 AND rating <= 5)
                     );''')
+    cur.execute("create index idx_book_id on comments(book_id);")
     if add_books:
         cur.executemany("insert into books(title,author,year) values(?, ?, ?)", [
             ("1984", "Orwell", 1949),
