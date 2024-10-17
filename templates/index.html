@@ -3,28 +3,34 @@
 {% block title %}BooksDB{% endblock %}
 
 {% block content %}
-    <img src="/static/books.svg" alt="Illustration de librairie">
+    <div class="flex space max">
+        <div class="full">
+            <h1>Bienvenue sur BooksDB</h1>
+            <div>Explorez et partagez des livres</div>
+        </div>
+        <img src="/static/books.svg" alt="Illustration de librairie">
+    </div>
     <div class="grid-comment">
         <div class="result">
             <p class="name">Les mieux notés</p>
-            {% for i in rate %}
+            {% for i in data['rate'] %}
                 <a class="hover button" href="{{ url_for('livre') }}?id={{ i['id'] }}">{{ i['title'] }}
                     par {{ i['author'] }}, {{ i['year'] }}</a>
             {% endfor %}
             <p class="name">Derniers ajoutés</p>
-            {% for i in recent %}
+            {% for i in data['recent'] %}
                 <a class="hover button" href="{{ url_for('livre') }}?id={{ i['id'] }}">{{ i['title'] }}
                     par {{ i['author'] }}, {{ i['year'] }}</a>
             {% endfor %}
         </div>
         <div class="result">
             <p class="name">Les plus commentés</p>
-            {% for i in comment %}
+            {% for i in data['comment'] %}
                 <a class="hover button" href="{{ url_for('livre') }}?id={{ i['id'] }}">{{ i['title'] }}
                     par {{ i['author'] }}, {{ i['year'] }}</a>
             {% endfor %}
             <p class="name">Derniers commentaires</p>
-            {% for i in last_comment %}
+            {% for i in data['last_comment'] %}
                 <a class="hover button" href="{{ url_for('livre') }}?id={{ i['id'] }}">{{ i['title'] }}
                     par {{ i['author'] }}, {{ i['year'] }}</a>
             {% endfor %}

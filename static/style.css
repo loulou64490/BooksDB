@@ -1,13 +1,17 @@
 :root {
-    --primary: 31, 35, 40;
-    --bg2: 229, 236, 255;
-    --bg: 246, 249, 255;
+    --primary: 28, 27, 29;
+    --secondary: 82, 73, 79;
+    --bg2: 230, 223, 228;
+    --bg: 248, 241, 246;
+    color-scheme: light;
 }
 
 [data-theme="dark"] {
-    --primary: 240, 247, 253;
-    --bg2: 0, 0, 0;
-    --bg: 12, 16, 23;
+    --primary: 230, 225, 227;
+    --secondary: 120, 111, 114;
+    --bg2: 42, 40, 42;
+    --bg: 33, 31, 33;
+    color-scheme: dark;
 }
 
 * {
@@ -30,6 +34,10 @@ body, html {
     background: rgb(var(--bg));
     color: rgb(var(--primary));
     cursor: auto;
+}
+
+body{
+    visibility: hidden;
 }
 
 .top {
@@ -70,18 +78,18 @@ footer a:hover {
 }
 
 .hover {
-    outline: 2px solid rgb(var(--primary));
+    outline: 2px solid rgb(var(--secondary));
     transition: transform 0.1s, box-shadow 0.1s;
 }
 
 .hover:hover {
     transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 rgb(var(--primary));
+    box-shadow: 4px 4px 0 rgb(var(--secondary));
 }
 
-.hover:active{
+.hover:active {
     transform: translate(1px, 1px);
-    box-shadow: 0 0 0 rgb(var(--primary));
+    box-shadow: 0 0 0 rgb(var(--secondary));
 }
 
 header {
@@ -90,8 +98,9 @@ header {
     left: 0;
     right: 0;
     z-index: 1000;
-    background: rgb(var(--bg));
-    box-shadow: 0 2px 0 rgb(var(--primary));
+    background: rgba(var(--bg2),0.9);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 0 rgb(var(--secondary));
 }
 
 header .title {
@@ -119,17 +128,17 @@ button svg {
 }
 
 #iconContainer svg {
-    fill: rgb(var(--primary));
+    fill: rgb(var(--secondary));
 }
 
 button path {
-    stroke: rgb(var(--primary));
+    stroke: rgb(var(--secondary));
 }
 
 .content {
     width: 100%;
+    min-height: calc(100vh - 8rem);
     margin-top: 5rem;
-    min-height: calc(100vh - 6rem);
 }
 
 main h1 {
@@ -137,8 +146,17 @@ main h1 {
     font-weight: normal;
 }
 
-main img{
-    width: 100%;
+.max{
+    max-width: 100%;
+}
+
+.full {
+    max-width: 30rem;
+}
+
+.flex img {
+    max-width: 40rem;
+    width: 50%;
     height: auto;
 }
 
@@ -149,7 +167,7 @@ main img{
 }
 
 button {
-    background: none;
+    background: rgb(var(--bg2));
     border: none;
     cursor: pointer;
     color: rgb(var(--primary));
@@ -167,7 +185,7 @@ main label {
 }
 
 main textarea, main input {
-    border: 2px solid rgb(var(--primary));
+    border: 2px solid rgb(var(--secondary));
 }
 
 main textarea {
@@ -182,12 +200,17 @@ main textarea {
 .result {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
+}
+
+.grid-comment a{
+    background: rgb(var(--bg2));
 }
 
 footer {
+    background: rgb(var(--bg2));
     width: 100%;
-    box-shadow: 0 -2px 0 rgb(var(--primary));
+    box-shadow: 0 -2px 0 rgb(var(--secondary));
 }
 
 footer div {
@@ -213,18 +236,19 @@ footer div {
     background: rgb(var(--bg));
     width: fit-content;
     padding: 1rem;
-    border: 2px solid rgb(var(--primary));
+    border: 2px solid rgb(var(--secondary));
 }
 
 .grid-comment {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 .box {
+    background: rgb(var(--bg2));
     padding: 1rem 0 1rem 1rem;
-    border: 2px solid rgb(var(--primary));
+    border: 2px solid rgb(var(--secondary));
     display: flex;
     gap: 1rem;
 }
@@ -259,10 +283,10 @@ footer div {
     display: none;
     width: 4px;
     height: 4px;
-    background-color: rgb(var(--primary));
+    background-color: rgb(var(--secondary));
 }
 
-.menu-bg{
+.menu-bg {
     position: fixed;
     top: 0;
     bottom: 0;
@@ -277,6 +301,6 @@ footer div {
     flex-direction: column;
     gap: 1rem;
     padding: 1rem;
-    border: 2px solid rgb(var(--primary));
+    border: 2px solid rgb(var(--secondary));
 }
 

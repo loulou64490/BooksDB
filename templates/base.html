@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" data-bs-theme="light">
+<html lang="fr">
 
 <head>
     <meta charset="UTF-8">
@@ -18,13 +18,13 @@
     <nav class="container">
         <div class="flex space">
             <div class="flex">
-                <a class="title" href="/">BookDB</a>
+                <a class="title" href="/">BooksDB</a>
                 <form class="flex hover" action="{{ url_for('recherche') }}" method="post">
                     <label>
                         <input autocomplete="off" type="text" name="query" placeholder="Rechercher..."
                                {% if result %}value="{{ result }}"{% endif %}>
                     </label>
-                    <button type="submit">
+                    <button class="loupe" type="submit">
                         <svg width="43" height="43" viewBox="0 0 43 43" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M19.8524 35.8502C28.7029 35.8502 35.8777 28.6755 35.8777 19.825C35.8777 10.9745 28.7029 3.79974 19.8524 3.79974C11.0019 3.79974 3.82721 10.9745 3.82721 19.825C3.82721 28.6755 11.0019 35.8502 19.8524 35.8502Z"
                                   stroke="black" stroke-width="2.67087"></path>
@@ -34,7 +34,7 @@
                 </form>
             </div>
             <div class="flex">
-                <button class="hover button" onclick="document.getElementById('add').style.display = 'flex'">
+                <button class="hover button" onclick="updateDisplay('add','flex')">
                     Ajouter
                 </button>
                 <div id="iconContainer" class="flex cursor">
@@ -72,7 +72,7 @@
                     <input type="number" name="year" required>
                 </label>
                 <div class="flex">
-                    <button class="hover" onclick="document.getElementById('add').style.display = 'none'">
+                    <button class="hover" onclick="updateDisplay('add','none')">
                         Annuler
                     </button>
                     <button class="hover" type="submit">Ajouter</button>
@@ -82,7 +82,7 @@
     </div>
 </main>
 
-<footer class="flex">
+<footer class="flex top">
     <div class="container">
         <p>&copy; 2024 Louis Chauvet-Villaret</p>
         &bullet;<a href="https://github.com/loulou64490/BooksDB">Github</a>
