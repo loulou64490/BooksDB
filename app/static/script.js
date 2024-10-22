@@ -35,7 +35,7 @@ lightIcon.onclick = darkIcon.onclick = toggleTheme;
 // Éviter le flash de transition de thème au chargement
 window.addEventListener('load', () => {
     const style = document.createElement('style');
-    style.textContent = `* { transition: background 0.2s; }`;
+    style.textContent = `*{ transition: background 0.2s; } .hover { transition: background 0.2s, transform 0.1s, box-shadow 0.1s; }`;
     document.head.appendChild(style);
 });
 

@@ -8,9 +8,9 @@
             <h1>Bienvenue sur BooksDB</h1>
             <div>Explorez et partagez des livres</div>
         </div>
-        <img src="/static/books.svg" alt="Illustration de librairie">
+        <img src="{{ url_for('static', filename='books.svg') }}" alt="Illustration de librairie">
     </div>
-    <div class="grid-comment">
+    <div class="grid-comment top">
         <div class="result">
             <p class="name">Les mieux notés</p>
             {% for i in data['rate'] %}

@@ -36,7 +36,7 @@ body, html {
     cursor: auto;
 }
 
-body{
+body {
     visibility: hidden;
 }
 
@@ -79,16 +79,15 @@ footer a:hover {
 
 .hover {
     outline: 2px solid rgb(var(--secondary));
-    transition: transform 0.1s, box-shadow 0.1s;
 }
 
 .hover:hover {
-    transform: translate(-1px, -1px);
+    transform: translate(-2px, -2px);
     box-shadow: 4px 4px 0 rgb(var(--secondary));
 }
 
 .hover:active {
-    transform: translate(1px, 1px);
+    transform: translate(2px, 2px);
     box-shadow: 0 0 0 rgb(var(--secondary));
 }
 
@@ -98,7 +97,7 @@ header {
     left: 0;
     right: 0;
     z-index: 1000;
-    background: rgba(var(--bg),0.7);
+    background: rgba(var(--bg), 0.7);
     backdrop-filter: blur(8px);
     box-shadow: 0 2px 0 rgb(var(--secondary));
 }
@@ -111,6 +110,7 @@ header .title {
 
 header form {
     background: rgb(var(--bg2));
+    outline: 2px solid rgb(var(--secondary));
 }
 
 header a img {
@@ -132,7 +132,7 @@ button svg {
 }
 
 #iconContainer svg {
-    fill: rgb(var(--secondary));
+    fill: rgb(var(--primary));
 }
 
 button path {
@@ -150,7 +150,7 @@ main h1 {
     font-weight: normal;
 }
 
-.max{
+.max {
     max-width: 100%;
 }
 
@@ -159,8 +159,7 @@ main h1 {
 }
 
 .flex img {
-    max-width: 40rem;
-    width: 50%;
+    width: 60%;
     height: auto;
 }
 
@@ -207,7 +206,7 @@ main textarea {
     gap: 1.5rem;
 }
 
-.grid-comment a{
+.grid-comment a {
     background: rgb(var(--bg2));
 }
 
@@ -234,19 +233,23 @@ footer div {
     display: none;
     justify-content: center;
     align-items: center;
+    z-index: 1;
 }
 
 .popup {
     background: rgb(var(--bg));
+    min-width: 20rem;
     width: fit-content;
     padding: 1rem;
     border: 2px solid rgb(var(--secondary));
+    z-index: 2;
 }
 
 .grid-comment {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
+    grid-auto-flow: dense;
 }
 
 .box {
@@ -255,6 +258,13 @@ footer div {
     border: 2px solid rgb(var(--secondary));
     display: flex;
     gap: 1rem;
+    height: fit-content;
+}
+
+.break-word {
+    word-break: break-word;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .rate {
@@ -277,6 +287,12 @@ footer div {
     width: 2rem;
     height: 20px;
     cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.box:hover .menu-button {
+    opacity: 1;
 }
 
 .box:hover .square, .flex2 {
@@ -287,7 +303,7 @@ footer div {
     display: none;
     width: 4px;
     height: 4px;
-    background-color: rgb(var(--secondary));
+    background-color: rgb(var(--primary));
 }
 
 .menu-bg {
@@ -308,3 +324,8 @@ footer div {
     border: 2px solid rgb(var(--secondary));
 }
 
+.error {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}

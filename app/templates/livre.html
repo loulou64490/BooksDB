@@ -5,8 +5,8 @@
 {% block content %}
     <div class="flex space">
         <div>
-            <h1>{{ data['title'] }}</h1>
-            <p class="rate">{{ data['author'] }}, {{ data['year'] }}</p>
+            <h1 class="break-word">{{ data['title'] }}</h1>
+            <p class="rate break-word">{{ data['author'] }}, {{ data['year'] }}</p>
         </div>
         <div class="flex">
             {% if comments %}
@@ -21,7 +21,7 @@
         <div class="grid-comment top">
             {% for comment in comments %}
                 <div class="box space">
-                    <p class="comment">{{ comment['comment'] }}</p>
+                    <p class="break-word">{{ comment['comment'] }}</p>
                     <div class="flex2">
                         <p class="rate">{{ comment['rating'] }}/5</p>
                         <div class="menu-button"
@@ -55,11 +55,11 @@
                         <p class="name">Modifier le commentaire</p>
                         <label>
                             <span>Commentaire</span>
-                            <textarea name="comment" required>{{ comment['comment'] }}</textarea>
+                            <textarea class="break-word" name="comment" required>{{ comment['comment'] }}</textarea>
                         </label>
                         <label>
                             <span>Note</span>
-                            <input type="number" name="rating" value="{{ comment['rating'] }}"
+                            <input class="break-word" type="number" name="rating" value="{{ comment['rating'] }}"
                                    placeholder="/5" min="0" max="5"
                                    required>
                         </label>
@@ -77,17 +77,19 @@
                 </form>
             {% endfor %}
         </div>
+    {% else %}
+        <p class="top">Soyez le premier à commenter !</p>
     {% endif %}
     <div class="popup-bg" id="comment">
         <form class="popup result" action="{{ url_for('commenter') }}?id={{ data['id'] }}" method="post">
             <p class="name">Commenter {{ data['title'] }}</p>
             <label>
                 <span>Commentaire</span>
-                <textarea name="comment" required></textarea>
+                <textarea class="break-word" name="comment" required></textarea>
             </label>
             <label>
                 <span>Note</span>
-                <input type="number" name="rating" placeholder="/5" min="0" max="5" required>
+                <input class="break-word" type="number" name="rating" placeholder="/5" min="0" max="5" required>
             </label>
             <div class="flex">
                 <button type="button" class="hover" onclick="updateDisplay('comment','none')">
@@ -100,20 +102,20 @@
     <div class="popup-bg" id="modify">
         <form class="popup result" action="{{ url_for('modifier') }}?id={{ data['id'] }}"
               method="post">
-            <p class="name">Modifier {{ data['title'] }}</p>
+            <p class="name break-word">Modifier {{ data['title'] }}</p>
             <label>
                 <span>Titre</span>
-                <input type="text" name="title" value="{{ data['title'] }}"
+                <input class="break-word" type="text" name="title" value="{{ data['title'] }}"
                        placeholder="{{ data['title'] }}" required>
             </label>
             <label>
                 <span>Auteur</span>
-                <input type="text" name="author" value="{{ data['author'] }}"
+                <input class="break-word" type="text" name="author" value="{{ data['author'] }}"
                        placeholder="{{ data['author'] }}" required>
             </label>
             <label>
                 <span>Année</span>
-                <input type="number" name="year" value="{{ data['year'] }}"
+                <input class="break-word" type="number" name="year" value="{{ data['year'] }}"
                        placeholder="{{ data['year'] }}" required>
             </label>
             <div class="flex">
@@ -126,7 +128,7 @@
     </div>
     <div class="popup-bg" id="delete">
         <div class="popup result">
-            <p>Voulez-vous vraiment supprimer {{ data['title'] }} ?</p>
+            <p class="break-word">Voulez-vous vraiment supprimer {{ data['title'] }} ?</p>
             <div class="flex">
                 <button class="hover" onclick="updateDisplay('delete','none')">Annuler
                 </button>

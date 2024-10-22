@@ -19,7 +19,7 @@
         <div class="flex space">
             <div class="flex">
                 <a class="title" href="/">BooksDB</a>
-                <form class="flex hover" action="{{ url_for('recherche') }}" method="post">
+                <form class="flex" action="{{ url_for('recherche') }}" method="post">
                     <label>
                         <input autocomplete="off" type="text" name="query" placeholder="Rechercher..."
                                {% if result %}value="{{ result }}"{% endif %}>
