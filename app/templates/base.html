@@ -12,14 +12,14 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
-<body>
+<body class="container hidden">
 
 <header>
     <nav class="container">
         <div class="flex space">
             <div class="flex">
-                <a class="title" href="/">BooksDB</a>
-                <form class="flex" action="{{ url_for('recherche') }}" method="post">
+                <a class="title underline" href="/">BooksDB</a>
+                <form class="flex" action="{{ url_for('search') }}" method="post">
                     <label>
                         <input autocomplete="off" type="text" name="query" placeholder="Rechercher..."
                                {% if result %}value="{{ result }}"{% endif %}>
@@ -34,17 +34,30 @@
                 </form>
             </div>
             <div class="flex">
+                {% if current_user.is_authenticated %}
+                    <a class="hover button" href="{{ url_for('account') }}">
+                        Compte
+                    </a>
+                {% else %}
+                    <a class="hover button" href="{{ url_for('login') }}">
+                        Connexion
+                    </a>
+                {% endif %}
                 <button class="hover button" onclick="updateDisplay('add','flex')">
                     Ajouter
                 </button>
-                <div id="iconContainer" class="flex cursor">
-                    <svg id="lightIcon" class="theme-icon" xmlns="http://www.w3.org/2000/svg" height="40px"
+                <div id="themeSwitcherButton" class="flex cursor">
+                    <svg id="darkIcon" class="theme-icon hidden" xmlns="http://www.w3.org/2000/svg" height="40px"
                          viewBox="0 -960 960 960" width="40px">
                         <path d="M484-80q-84 0-157.5-32t-128-86.5Q144-253 112-326.5T80-484q0-146 93-257.5T410-880q-18 98.33 11 192.92 29 94.59 100 165.66t165.5 100.1Q781-392.3 880-410.31q-26 144.13-138 237.22T484-80Zm0-66.67q96 0 175.67-52.66Q739.33-252 787-336.33q-88.67-8-169.67-42.17-81-34.17-143.66-96.5Q411-537.33 377-618t-41.67-168.67q-84.33 46.34-136.5 126.5Q146.67-580 146.67-484q0 140.56 98.39 238.94 98.38 98.39 238.94 98.39ZM473.33-475Z"></path>
                     </svg>
-                    <svg id="darkIcon" class="theme-icon hidden" xmlns="http://www.w3.org/2000/svg" height="40px"
+                    <svg id="lightIcon" class="theme-icon hidden" xmlns="http://www.w3.org/2000/svg" height="40px"
                          viewBox="0 -960 960 960" width="40px">
                         <path d="M480.67-28.67 346-160H160v-186L26.67-480 160-614v-186h186l134.67-133.33L614-800h186v186l133.33 134L800-346v186H614L480.67-28.67ZM480.7-284q81.63 0 139.13-57.54 57.5-57.53 57.5-139.16T619.8-619.83q-57.54-57.5-139.17-57.5T341.5-619.8Q284-562.26 284-480.63t57.54 139.13Q399.07-284 480.7-284Zm-.03-196.67Zm0 358.67 105.27-104.67h147.39V-374l106-106-106-106v-147.33H586l-105.33-106-106.67 106H226.67V-586l-106 106 106 106v147.33h146.66L480.67-122ZM480-480.67Z"></path>
+                    </svg>
+                    <svg id="systemIcon" class="theme-icon" xmlns="http://www.w3.org/2000/svg" height="40px"
+                         viewBox="0 -960 960 960" width="40px">
+                        <path d="M320-120v-80h80v-80H160q-33 0-56.5-23.5T80-360v-400q0-33 23.5-56.5T160-840h640q33 0 56.5 23.5T880-760v400q0 33-23.5 56.5T800-280H560v80h80v80H320ZM160-360h640v-400H160v400Zm0 0v-400 400Z"></path>
                     </svg>
                 </div>
             </div>
@@ -52,42 +65,64 @@
     </nav>
 </header>
 
-<main class="container">
+<main>
     <div class="content">
-        {% block content %}{% endblock %}
-        <div class="popup-bg" id="add">
-            <form class="popup result" action="{{ url_for('modifier') }}"
-                  method="post">
-                <p class="name">Ajouter un livre</p>
-                <label>
-                    <span>Titre</span>
-                    <input type="text" name="title" required>
-                </label>
-                <label>
-                    <span>Auteur</span>
-                    <input type="text" name="author" required>
-                </label>
-                <label>
-                    <span>Année</span>
-                    <input type="number" name="year" required>
-                </label>
-                <div class="flex">
-                    <button class="hover" onclick="updateDisplay('add','none')">
-                        Annuler
-                    </button>
-                    <button class="hover" type="submit">Ajouter</button>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div id="{{ message }}" class="button hover"
+                             onclick="loginSwitcher('{{ message }}','none')">{{ message }}</div>
+                    {% endfor %}
                 </div>
-            </form>
-        </div>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+        {% if current_user.is_authenticated %}
+            <div class="popup-bg" id="add">
+                <form class="popup result" action="{{ url_for('modify') }}"
+                      method="post">
+                    <p class="name">Ajouter un livre</p>
+                    <label>
+                        <span>Titre</span>
+                        <input type="text" name="title" required>
+                    </label>
+                    <label>
+                        <span>Auteur</span>
+                        <input type="text" name="author" required>
+                    </label>
+                    <label>
+                        <span>Année</span>
+                        <input type="number" name="year" required>
+                    </label>
+                    <div class="flex">
+                        <button class="hover" onclick="updateDisplay('add','none')" type="button">
+                            Annuler
+                        </button>
+                        <button class="hover" type="submit">Ajouter</button>
+                    </div>
+                </form>
+            </div>
+        {% else %}
+            <div class="popup-bg" id="add">
+                <form class="popup result">
+                    <p class="name">Ajouter un livre</p>
+                    <div>Vous devez vous connecter pour ajouter un livre</div>
+                    <div class="flex">
+                        <button type="button" class="hover" onclick="updateDisplay('add','none')">
+                            Annuler
+                        </button>
+                    </div>
+                </form>
+            </div>
+        {% endif %}
     </div>
 </main>
 
 <footer class="flex top">
-    <div class="container">
-        <p>&copy; 2024 Louis Chauvet-Villaret</p>
-        &bullet;<a href="https://github.com/loulou64490/BooksDB">Github</a>
-        {#        &bullet;<a href="https://www.instagram.com/loulou64490">Instagram</a>#}
-    </div>
+    <p>&copy; 2024 Louis Chauvet-Villaret</p>
+    &bullet;<a class="underline" href="https://github.com/loulou64490/BooksDB">Github</a>
+    {#        &bullet;<a href="https://www.instagram.com/loulou64490">Instagram</a>#}
 </footer>
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>

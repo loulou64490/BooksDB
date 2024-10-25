@@ -5,10 +5,14 @@
 {% block content %}
     <div class="flex space max">
         <div class="full">
+            {% if current_user.is_authenticated %}
+            <h1>Bienvenue {{ current_user.name }} !</h1>
+            {% else %}
             <h1>Bienvenue sur BooksDB</h1>
+            {% endif %}
             <div>Explorez et partagez des livres</div>
         </div>
-        <img src="{{ url_for('static', filename='books.svg') }}" alt="Illustration de librairie">
+        <img class="hidden" src="{{ url_for('static', filename='books.svg') }}" alt="Illustration de librairie">
     </div>
     <div class="grid-comment top">
         <div class="result">
