@@ -1,9 +1,26 @@
 import sqlite3
-from ollama import chat
-import threading
+from flask_login import UserMixin
+from app import db, login
+
+
+# from ollama import chat
+# import threading
+
+class User(UserMixin, db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.Text, nullable=False)
+    hash = db.Column(db.Text, nullable=False)
+    email = db.Column(db.Text, nullable=False, unique=True)
+
+
+@login.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 
 def execute_query(query, params=(), fetchone=False, fetchall=False, commit=False):
-    with sqlite3.connect('books.db') as conn:
+    with sqlite3.connect('instance/books.db') as conn:
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
         cur.execute(query, params)
@@ -18,6 +35,7 @@ def execute_query(query, params=(), fetchone=False, fetchall=False, commit=False
         if fetchall:
             return cur.fetchall()
         return None
+
 
 def handle_modification(data, book_id=None, delete=False):
     if delete:
@@ -37,6 +55,7 @@ def handle_modification(data, book_id=None, delete=False):
         book_id = cur.lastrowid
     return book_id
 
+
 def modify_comment(action, comment_id, form_data=None):
     if action == 'delete':
         execute_query("DELETE FROM comments WHERE id=?", [comment_id], commit=True)
@@ -49,4 +68,4 @@ def modify_comment(action, comment_id, form_data=None):
         execute_query("UPDATE comments SET comment=?, rating=? WHERE id=?",
                       [form_data['comment'], form_data['rating'], comment_id], commit=True)
 
-ai = lambda message:chat(model='qwen2.5:0.5b', messages=[{'role': 'user', 'content': message}, ])['message']['content']
+# ai = lambda message:chat(model='qwen2.5:0.5b', messages=[{'role': 'user', 'content': message}, ])['message']['content']

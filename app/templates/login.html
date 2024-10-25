@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Connexion - BooksDB{% endblock %}
+
+{% block content %}
+    <div class="login">
+        <form class="result hidden" action=""
+              method="post" id="login">
+            <p class="name">Se connecter</p>
+            <div class="flex">
+                <p>Vous n’avez pas de compte ?</p>
+                <div class="underline" onclick="loginSwitcher('register','flex');loginSwitcher('login','none')">
+                    S'inscrire
+                </div>
+            </div>
+            <label>
+                <span>Adresse mail</span>
+                <input type="text" name="email" required>
+            </label>
+            <label>
+                <span>Mot de passe</span>
+                <input type="password" name="password" required>
+            </label>
+            {% if errors %}
+                {% if not register %}
+                    <div class="error">{{ errors }}</div>
+                {% endif %}
+            {% endif %}
+            <div class="flex">
+                <button class="hover" type="submit" name="submit" value="login">Connexion</button>
+            </div>
+        </form>
+        <form class="result hidden" action="{{ url_for('login') }}"
+              method="post" id="register">
+            <p class="name">S'inscrire</p>
+            <div class="flex">
+                <p>Vous avez déjà un compte ?</p>
+                <div class="underline" onclick="loginSwitcher('login','flex');loginSwitcher('register','none')">Se
+                    connecter
+                </div>
+            </div>
+            <label>
+                <span>Nom complet</span>
+                <input type="text" name="name" required>
+            </label>
+            <label>
+                <span>Adresse mail</span>
+                <input type="email" name="email" required>
+            </label>
+            <label>
+                <span>Mot de passe</span>
+                <input type="password" name="password" required>
+            </label>
+            {% if errors %}
+                {% if register %}
+                    <div class="error">{{ errors }}</div>
+                {% endif %}
+            {% endif %}
+            <div class="flex">
+                <button class="hover" type="submit" name="submit" value="register">Inscription</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        {% if register %}
+            window.addEventListener('load', () => {
+                loginSwitcher('register', 'flex')
+            });
+        {% else %}
+            window.addEventListener('load', () => {
+                loginSwitcher('login', 'flex')
+            });
+        {% endif %}
+    </script>
+{% endblock %}

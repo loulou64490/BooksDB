@@ -1,6 +1,7 @@
 from app import app
 
 # TODO: formulaire avec flask-wtf
+# vérification coté serveur
 # TODO: connexion avec flask-login
 # TODO: ajouter de l'ia
 # programmation asynchrone ?
@@ -14,11 +15,11 @@ from app import app
 # dernier commentaire : afficher
 # TODO: réécrire CSS
 # TODO: améliorer commentaires
-# commentaires sur une lignes
-# maximum 3 lignes de texte, bouton "lire plus"
-# toujours afficher le bouton d'interaction
 # like dislike
-# réponses ???
+# réponses ??? non je pense pas
+# TODO: améliorer compte
+# véréfication info entrée (mail) et retourner les erreurs adaptées
+# TODO: meilleur flash
 
 if __name__ == '__main__':
     app.run(debug=True)
