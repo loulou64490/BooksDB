@@ -2,6 +2,7 @@ import sqlite3
 from time import time
 from flask_login import UserMixin
 from app import db, login
+import re
 
 
 # from ollama import chat
@@ -18,6 +19,9 @@ class User(UserMixin, db.Model):
 @login.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+
+def valide_email(email): return bool(re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$', email))
 
 
 def generate_date(comments):
@@ -57,7 +61,7 @@ def generate_date(comments):
             else:
                 d = str(d) + ' ans'
         date[i['id']] = 'il y a ' + d
-        if d=='0 minutes':
+        if d == '0 minutes':
             date[i['id']] = 'à l\'instant'
     return date
 

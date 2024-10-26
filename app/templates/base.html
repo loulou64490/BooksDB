@@ -22,7 +22,7 @@
                 <form class="flex" action="{{ url_for('search') }}" method="post">
                     <label>
                         <input autocomplete="off" type="text" name="query" placeholder="Rechercher..."
-                               {% if result %}value="{{ result }}"{% endif %}>
+                               {% if query %}value="{{ query }}"{% endif %}>
                     </label>
                     <button class="loupe" type="submit">
                         <svg width="43" height="43" viewBox="0 0 43 43" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -107,7 +107,7 @@
             <div class="popup-bg" id="add">
                 <form class="popup result">
                     <p class="name">Ajouter un livre</p>
-                    <div>Vous devez vous connecter pour ajouter un livre</div>
+                    <div>Connectez-vous pour ajouter un livre</div>
                     <div class="flex">
                         <button type="button" class="hover" onclick="updateDisplay('add','none')">
                             Annuler

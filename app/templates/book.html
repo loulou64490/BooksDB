@@ -12,19 +12,13 @@
             {% if comments %}
                 <p class="name">{{ average }}/5</p>
             {% endif %}
-            {% if current_user.is_authenticated %}
-                <button class="hover" onclick="updateDisplay('comment','flex')">Commenter</button>
-                {% if current_user['id'] == data['user_id'] %}
-                    <button class="hover" onclick="updateDisplay('modify','flex')">Modifier</button>
-                    <button class="hover" onclick="updateDisplay('delete','flex')">Supprimer</button>
-                {% endif %}
-
+            <button class="hover" onclick="updateDisplay('comment','flex')">Commenter</button>
+            {% if current_user['id'] == data['user_id'] %}
+                <button class="hover" onclick="updateDisplay('modify','flex')">Modifier</button>
+                <button class="hover" onclick="updateDisplay('delete','flex')">Supprimer</button>
             {% endif %}
         </div>
     </div>
-    {% if not current_user.is_authenticated %}
-        <p class="top">Connectez-vous pour commenter</p>
-    {% endif %}
     {% if comments %}
         <div class="column top">
             {% for comment in comments %}
@@ -56,9 +50,6 @@
                     <div class="popup-bg" id="comm{{ comment['id'] }}">
                         <form class="popup popup2 result" action="{{ url_for('comment') }}?id={{ data['id'] }}"
                               method="post">
-                            <button name="signal" value="{{ comment['id'] }}" class="hover" type="submit">
-                                Signaler
-                            </button>
                             {% if current_user['id'] == comment['user_id'] %}
                                 <button class="hover"
                                         onclick="updateDisplay('mod{{ comment['id'] }}','flex')"
@@ -67,6 +58,10 @@
                                 </button>
                                 <button name="delete" value="{{ comment['id'] }}" class="hover" type="submit">
                                     Supprimer
+                                </button>
+                            {% else %}
+                                <button name="signal" value="{{ comment['id'] }}" class="hover" type="submit">
+                                    Signaler
                                 </button>
                             {% endif %}
                             <button type="button" class="hover"
@@ -135,46 +130,58 @@
                 </div>
             </form>
         </div>
-    {% if current_user['id'] == data['user_id'] %}
-        <div class="popup-bg" id="modify">
-            <form class="popup result" action="{{ url_for('modify') }}?id={{ data['id'] }}"
-                  method="post">
-                <p class="name break-word">Modifier {{ data['title'] }}</p>
-                <label>
-                    <span>Titre</span>
-                    <input class="break-word" type="text" name="title" value="{{ data['title'] }}"
-                           placeholder="{{ data['title'] }}" required>
-                </label>
-                <label>
-                    <span>Auteur</span>
-                    <input class="break-word" type="text" name="author" value="{{ data['author'] }}"
-                           placeholder="{{ data['author'] }}" required>
-                </label>
-                <label>
-                    <span>Année</span>
-                    <input class="break-word" type="number" name="year" value="{{ data['year'] }}"
-                           placeholder="{{ data['year'] }}" required>
-                </label>
+        {% if current_user['id'] == data['user_id'] %}
+            <div class="popup-bg" id="modify">
+                <form class="popup result" action="{{ url_for('modify') }}?id={{ data['id'] }}"
+                      method="post">
+                    <p class="name break-word">Modifier {{ data['title'] }}</p>
+                    <label>
+                        <span>Titre</span>
+                        <input class="break-word" type="text" name="title" value="{{ data['title'] }}"
+                               placeholder="{{ data['title'] }}" required>
+                    </label>
+                    <label>
+                        <span>Auteur</span>
+                        <input class="break-word" type="text" name="author" value="{{ data['author'] }}"
+                               placeholder="{{ data['author'] }}" required>
+                    </label>
+                    <label>
+                        <span>Année</span>
+                        <input class="break-word" type="number" name="year" value="{{ data['year'] }}"
+                               placeholder="{{ data['year'] }}" required>
+                    </label>
+                    <div class="flex">
+                        <button class="hover" type="button" onclick="updateDisplay('modify','none')">
+                            Annuler
+                        </button>
+                        <button class="hover" type="submit">Modifier</button>
+                    </div>
+                </form>
+            </div>
+            <div class="popup-bg" id="delete">
+                <div class="popup result">
+                    <p class="break-word">Voulez-vous vraiment supprimer {{ data['title'] }} ?</p>
+                    <div class="flex">
+                        <button class="hover" onclick="updateDisplay('delete','none')">Annuler
+                        </button>
+                        <form action="{{ url_for('modify') }}?id={{ data['id'] }}" method="post">
+                            <button name="delete" class="hover" type="submit">Supprimer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="popup-bg" id="comment">
+            <form class="popup result">
+                <p class="name">Commenter {{ data['title'] }}</p>
+                <div>Connectez-vous pour commenter</div>
                 <div class="flex">
-                    <button class="hover" type="button" onclick="updateDisplay('modify','none')">
+                    <button type="button" class="hover" onclick="updateDisplay('comment','none')">
                         Annuler
                     </button>
-                    <button class="hover" type="submit">Modifier</button>
                 </div>
             </form>
         </div>
-        <div class="popup-bg" id="delete">
-            <div class="popup result">
-                <p class="break-word">Voulez-vous vraiment supprimer {{ data['title'] }} ?</p>
-                <div class="flex">
-                    <button class="hover" onclick="updateDisplay('delete','none')">Annuler
-                    </button>
-                    <form action="{{ url_for('modify') }}?id={{ data['id'] }}" method="post">
-                        <button name="delete" class="hover" type="submit">Supprimer</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-        {% endif %}
     {% endif %}
 {% endblock %}
