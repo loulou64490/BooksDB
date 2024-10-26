@@ -6,40 +6,17 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
 
-def save_form_to_session(func):
+def prg(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
         if request.method == 'POST':
-            # Enregistrer chaque élément de `request.form` dans `session`
+            session.setdefault("form_data", {})
             for key, value in request.form.items():
-                session[key] = value
-            # Rediriger vers la même route après l'enregistrement
+                session["form_data"][key] = value
             return redirect(request.url)
-
-        # Si la méthode n'est pas POST, récupérer les données de session
-        data = {}
-        for key in list(session.keys()):
-            data[key] = session.pop(key)  # On récupère et supprime chaque clé
-
-        # Passer le dictionnaire `data` au contexte de la fonction décorée
-        return func(data=data, *args, **kwargs)
-
+        data = session.pop("form_data", {})
+        return func(form=data, *args, **kwargs)
     return decorated_function
-
-def render_prg(template_name, *args, **kwargs):
-    if request.method == 'POST':
-        # Stocke chaque donnée spécifiée dans la session
-        for arg in args:
-            session[arg] = request.form.get(arg)
-
-        # Redirige vers la même route en utilisant `request.endpoint`
-        return redirect(url_for(request.endpoint))
-
-    # Récupère les données de la session et les supprime
-    donnees = {arg: session.pop(arg, None) for arg in args}
-    donnees.update(kwargs)
-    # Rend le template avec les données récupérées
-    return render_template(template_name, **donnees)
 
 
 @app.errorhandler(404)
@@ -69,23 +46,23 @@ def index():
 
 
 @app.route('/connexion', methods=['POST', 'GET'])
-def login():
+@prg
+def login(form=None):
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-
-    if request.method == 'POST':
+    if form:
         errors = None
-        if not request.form['email'] or not request.form['password']:
+        if not form['email'] or not form['password']:
             errors = 'Veuillez remplir tous les champs'
-        elif not valide_email(request.form['email']):
+        elif not valide_email(form['email']):
             errors = 'Adresse mail invalide'
 
-        if request.form['submit'] == 'login':
-            user = User.query.filter_by(email=request.form['email']).first()
-            if not (user and check_password_hash(user.hash, request.form['password'])):
+        if form['submit'] == 'login':
+            user = User.query.filter_by(email=form['email']).first()
+            if not (user and check_password_hash(user.hash, form['password'])):
                 errors = 'Adresse mail ou mot de passe incorrect'
             if errors:
-                return render_template('login.html', errors=errors, email=request.form['email'])
+                return render_template('login.html', errors=errors, email=form['email'])
 
             login_user(user, remember=True)
             flash('Connexion réussie')
@@ -94,17 +71,17 @@ def login():
             return redirect(url_for('index'))
 
 
-        elif request.form['submit'] == 'register':
-            if not request.form['name']:
+        elif form['submit'] == 'register':
+            if not form['name']:
                 errors = 'Veuillez remplir tous les champs'
-            elif User.query.filter_by(email=request.form['email']).first():
+            elif User.query.filter_by(email=form['email']).first():
                 errors = 'Adresse mail déjà utilisée'
             if errors:
-                return render_template('login.html', errors=errors, name=request.form['name'],
-                                       email=request.form['email'], register=True)
+                return render_template('login.html', errors=errors, name=form['name'],
+                                       email=form['email'], register=True)
 
-            user = User(name=request.form['name'], hash=generate_password_hash(request.form['password']),
-                        email=request.form['email'])
+            user = User(name=form['name'], hash=generate_password_hash(form['password']),
+                        email=form['email'])
             db.session.add(user)
             db.session.commit()
             login_user(user, remember=True)
@@ -115,21 +92,22 @@ def login():
 
 @app.route("/compte", methods=['POST', 'GET'])
 @login_required
-def account():
-    if request.method == 'POST':
-        if request.form['submit'] == 'logout':
+@prg
+def account(form=None):
+    if form:
+        if form['submit'] == 'logout':
             logout_user()
             flash('Déconnexion réussie')
             return redirect(url_for('index'))
-        elif request.form['submit'] == 'password':
-            if check_password_hash(current_user.hash, request.form['password']):
-                current_user.hash = generate_password_hash(request.form['new_password'])
+        elif form['submit'] == 'password':
+            if check_password_hash(current_user.hash, form['password']):
+                current_user.hash = generate_password_hash(form['new_password'])
                 db.session.commit()
                 flash('Mot de passe modifié')
             else:
                 flash('Mot de passe incorrect')
-        elif request.form['submit'] == 'name':
-            current_user.name = request.form['name']
+        elif form['submit'] == 'name':
+            current_user.name = form['name']
             db.session.commit()
             flash('Nom modifié')
     return render_template('account.html')
@@ -155,21 +133,18 @@ def livre():
 
 
 @app.route('/recherche', methods=['POST', 'GET'])
-def search():
-    if request.method == 'GET':
-        query = session.get('query')
-        if query:
-            data = execute_query(
-                "SELECT * FROM books WHERE title LIKE ? OR author LIKE ? OR year LIKE ?",
-                ['%' + query + '%'] * 3, fetchall=True
-            )
-            if len(data) == 1:
-                return redirect(url_for('livre', id=data[0]['id']))
-        else:
-            data = execute_query("SELECT * FROM books", fetchall=True)
+@prg
+def search(form):
+    if form['query']:
+        data = execute_query(
+            "SELECT * FROM books WHERE title LIKE ? OR author LIKE ? OR year LIKE ?",
+            ['%' + form['query'] + '%'] * 3, fetchall=True
+        )
+        if len(data) == 1:
+            return redirect(url_for('livre', id=data[0]['id']))
     else:
-        data = None
-    return render_prg('search.html', 'query', data=data)
+        data = execute_query("SELECT * FROM books", fetchall=True)
+    return render_template('search.html',query=form['query'], data=data)
 
 
 @app.route('/modifier', methods=['POST'])
