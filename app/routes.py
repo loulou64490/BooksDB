@@ -1,8 +1,45 @@
 from app import app, db
-from flask import render_template, request, redirect, flash, url_for
+from flask import render_template, request, redirect, flash, url_for, session
 from flask_login import login_user, logout_user, login_required, current_user
-from app.models import execute_query, handle_modification, modify_comment, User, generate_date
+from app.models import execute_query, handle_modification, modify_comment, User, generate_date, valide_email
 from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
+
+
+def save_form_to_session(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        if request.method == 'POST':
+            # Enregistrer chaque élément de `request.form` dans `session`
+            for key, value in request.form.items():
+                session[key] = value
+            # Rediriger vers la même route après l'enregistrement
+            return redirect(request.url)
+
+        # Si la méthode n'est pas POST, récupérer les données de session
+        data = {}
+        for key in list(session.keys()):
+            data[key] = session.pop(key)  # On récupère et supprime chaque clé
+
+        # Passer le dictionnaire `data` au contexte de la fonction décorée
+        return func(data=data, *args, **kwargs)
+
+    return decorated_function
+
+def render_prg(template_name, *args, **kwargs):
+    if request.method == 'POST':
+        # Stocke chaque donnée spécifiée dans la session
+        for arg in args:
+            session[arg] = request.form.get(arg)
+
+        # Redirige vers la même route en utilisant `request.endpoint`
+        return redirect(url_for(request.endpoint))
+
+    # Récupère les données de la session et les supprime
+    donnees = {arg: session.pop(arg, None) for arg in args}
+    donnees.update(kwargs)
+    # Rend le template avec les données récupérées
+    return render_template(template_name, **donnees)
 
 
 @app.errorhandler(404)
@@ -35,22 +72,37 @@ def index():
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
+
     if request.method == 'POST':
+        errors = None
+        if not request.form['email'] or not request.form['password']:
+            errors = 'Veuillez remplir tous les champs'
+        elif not valide_email(request.form['email']):
+            errors = 'Adresse mail invalide'
+
         if request.form['submit'] == 'login':
             user = User.query.filter_by(email=request.form['email']).first()
-            if user and check_password_hash(user.hash, request.form['password']):
-                login_user(user, remember=True)
-                flash('Connexion réussie')
-                if request.args.get('next'):
-                    return redirect(request.args.get('next'))
-                return redirect(url_for('index'))
-            else:
-                return render_template('login.html', errors='Adresse mail ou mot de passe incorrect',
-                                       email=request.form['email'])
+            if not (user and check_password_hash(user.hash, request.form['password'])):
+                errors = 'Adresse mail ou mot de passe incorrect'
+            if errors:
+                return render_template('login.html', errors=errors, email=request.form['email'])
+
+            login_user(user, remember=True)
+            flash('Connexion réussie')
+            if request.args.get('next'):
+                return redirect(request.args.get('next'))
+            return redirect(url_for('index'))
+
+
         elif request.form['submit'] == 'register':
-            if User.query.filter_by(email=request.form['email']).first():
-                return render_template('login.html', errors='Email déjà utilisé', name=request.form['name'],
-                                       register=True)
+            if not request.form['name']:
+                errors = 'Veuillez remplir tous les champs'
+            elif User.query.filter_by(email=request.form['email']).first():
+                errors = 'Adresse mail déjà utilisée'
+            if errors:
+                return render_template('login.html', errors=errors, name=request.form['name'],
+                                       email=request.form['email'], register=True)
+
             user = User(name=request.form['name'], hash=generate_password_hash(request.form['password']),
                         email=request.form['email'])
             db.session.add(user)
@@ -96,26 +148,28 @@ def livre():
                 execute_query("SELECT AVG(rating) FROM comments WHERE book_id=?", [book_id], fetchone=True)[0], 1)
             if average.is_integer():
                 average = int(average)
-            return render_template('book.html', data=data, comments=comments, average=average, date=generate_date(comments))
-        else:
-            return render_template('book.html', data=data)
-    else:
-        return render_template('errors/404.html'), 404
+            return render_template('book.html', data=data, comments=comments, average=average,
+                                   date=generate_date(comments))
+        return render_template('book.html', data=data)
+    return render_template('errors/404.html'), 404
 
 
 @app.route('/recherche', methods=['POST', 'GET'])
 def search():
-    query = request.form['query']
-    if request.method == 'POST' and request.form['query']:
-        data = execute_query(
-            "SELECT * FROM books WHERE title LIKE ? OR author LIKE ? OR year LIKE ?",
-            ['%' + query + '%'] * 3, fetchall=True
-        )
-        if len(data) == 1:
-            return redirect(url_for('livre', id=data[0]['id']))
+    if request.method == 'GET':
+        query = session.get('query')
+        if query:
+            data = execute_query(
+                "SELECT * FROM books WHERE title LIKE ? OR author LIKE ? OR year LIKE ?",
+                ['%' + query + '%'] * 3, fetchall=True
+            )
+            if len(data) == 1:
+                return redirect(url_for('livre', id=data[0]['id']))
+        else:
+            data = execute_query("SELECT * FROM books", fetchall=True)
     else:
-        data = execute_query("SELECT * FROM books", fetchall=True)
-    return render_template('search.html', data=data, result=query)
+        data = None
+    return render_prg('search.html', 'query', data=data)
 
 
 @app.route('/modifier', methods=['POST'])
@@ -139,14 +193,16 @@ def modify():
 def comment():
     book_id = request.args.get('id')
     if 'delete' in request.form:
-        if current_user.id == execute_query("SELECT user_id FROM comments WHERE id=?", [request.form['delete']],fetchone=True)[0]:
+        if current_user.id == \
+                execute_query("SELECT user_id FROM comments WHERE id=?", [request.form['delete']], fetchone=True)[0]:
             modify_comment('delete', request.form['delete'])
         else:
             flash('ERREUR')
     elif 'signal' in request.form:
         modify_comment('signal', request.form['signal'])
     elif 'modify' in request.form:
-        if current_user.id == execute_query("SELECT user_id FROM comments WHERE id=?", [request.form['modify']],fetchone=True)[0]:
+        if current_user.id == \
+                execute_query("SELECT user_id FROM comments WHERE id=?", [request.form['modify']], fetchone=True)[0]:
             modify_comment('modify', request.form['modify'], request.form)
         else:
             flash('ERREUR')

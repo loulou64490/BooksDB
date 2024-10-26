@@ -38,7 +38,7 @@ def init_db(add_content=False):
                     );''')
     cur.execute("create index idx_book_id on comments(book_id);")
     if add_content:
-        cur.execute("insert into users(name, hash, email) values(?,?,?)",("Louis Chauvet-Villaret","test","louis@revuejazz.fr"))
+        cur.execute("insert into users(name, hash, email) values(?,?,?)",("Loulou","scrypt:32768:8:1$OymK9Js3CGKPFMtM$f1dfa1604b7f6a1e1cc56971ecfcde1912928eb7d45672b85098ada6b9a05100371ae1374854a5a18c3a84d1a5bf394bc46f3c00ff8bc3cea21ce3c6138ea699","louis@revuejazz.fr"))
         cur.executemany("insert into books(title,author,year, user_id) values(?, ?, ?,?)", [
             ("1984", "Orwell", 1949, 1),
             ("Dune", "Herbert", 1965, 1),
