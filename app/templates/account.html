@@ -3,5 +3,31 @@
 {% block title %}Compte - BooksDB{% endblock %}
 
 {% block content %}
-
+    <div class="column">
+        <h1>Compte</h1>
+        <div>Connecté en tant que {{ current_user.name }} ({{ current_user.email }})</div>
+        <form class="flex" action="{{ url_for("account") }}" method="post">
+            <button class="hover button" type="submit" name="submit" value="logout">Déconnexion</button>
+        </form>
+        <form class="column start top" action="{{ url_for("account") }}" method="post">
+            <div class="rate">Changer le nom</div>
+            <label>
+                <span>Nom complet</span>
+                <input type="text" name="name" required value="{{ current_user.name }}">
+            </label>
+            <button class="hover" type="submit" name="submit" value="name">Valider</button>
+        </form>
+        <form class="column start top" action="{{ url_for("account") }}" method="post">
+            <div class="rate">Changer le mot de passe</div>
+            <label>
+                <span>Ancien mot de passe</span>
+                <input type="password" name="password" required>
+            </label>
+            <label>
+                <span>Nouveau mot de passe</span>
+                <input type="password" name="new_password" required>
+            </label>
+            <button class="hover" type="submit" name="submit" value="password">Valider</button>
+        </form>
+    </div>
 {% endblock %}

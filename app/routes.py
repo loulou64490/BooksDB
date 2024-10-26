@@ -1,8 +1,7 @@
 from app import app, db
 from flask import render_template, request, redirect, flash, url_for
 from flask_login import login_user, logout_user, login_required, current_user
-from app.models import execute_query, handle_modification, modify_comment, User
-from time import time
+from app.models import execute_query, handle_modification, modify_comment, User, generate_date
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -46,17 +45,19 @@ def login():
                     return redirect(request.args.get('next'))
                 return redirect(url_for('index'))
             else:
-                return render_template('login.html', error='Adresse mail ou mot de passe incorrect')
+                return render_template('login.html', errors='Adresse mail ou mot de passe incorrect',
+                                       email=request.form['email'])
         elif request.form['submit'] == 'register':
             if User.query.filter_by(email=request.form['email']).first():
-                return render_template('login.html', error='Email déjà utilisé', register=True)
+                return render_template('login.html', errors='Email déjà utilisé', name=request.form['name'],
+                                       register=True)
             user = User(name=request.form['name'], hash=generate_password_hash(request.form['password']),
                         email=request.form['email'])
             db.session.add(user)
             db.session.commit()
             login_user(user, remember=True)
             flash('Inscription réussie')
-            return redirect(url_for('account'))
+            return redirect(url_for('index'))
     return render_template('login.html')
 
 
@@ -64,15 +65,22 @@ def login():
 @login_required
 def account():
     if request.method == 'POST':
-        pass
+        if request.form['submit'] == 'logout':
+            logout_user()
+            flash('Déconnexion réussie')
+            return redirect(url_for('index'))
+        elif request.form['submit'] == 'password':
+            if check_password_hash(current_user.hash, request.form['password']):
+                current_user.hash = generate_password_hash(request.form['new_password'])
+                db.session.commit()
+                flash('Mot de passe modifié')
+            else:
+                flash('Mot de passe incorrect')
+        elif request.form['submit'] == 'name':
+            current_user.name = request.form['name']
+            db.session.commit()
+            flash('Nom modifié')
     return render_template('account.html')
-
-
-@app.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for("index"))
 
 
 @app.route('/livre')
@@ -81,30 +89,14 @@ def livre():
     data = execute_query("SELECT * FROM books WHERE id=?", [book_id], fetchone=True)
     if data:
         comments = execute_query(
-            "SELECT comments.id, comment, rating, date, name FROM comments join users on comments.user_id = users.id WHERE book_id=? ORDER BY comments.id DESC",
+            "SELECT comments.id, comment, rating, date, name, user_id FROM comments join users on comments.user_id = users.id WHERE book_id=? ORDER BY comments.id DESC",
             [book_id], fetchall=True)
         if comments:
             average = round(
                 execute_query("SELECT AVG(rating) FROM comments WHERE book_id=?", [book_id], fetchone=True)[0], 1)
             if average.is_integer():
                 average = int(average)
-            date = {}
-            for i in comments:
-                d = time() - i['date']
-                if d < 3600:
-                    d = "il y a moins d'une heure"
-                elif d < 86400:
-                    d = "il y a moins d'un jour"
-                elif d < 604800:
-                    d = "il y a moins d'une semaine"
-                elif d < 2678400:
-                    d = "il y a moins d'un mois"
-                elif d < 31536000:
-                    d = "il y a moins d'un an"
-                else:
-                    d = "il y a longtemps"
-                date[i['id']] = d
-            return render_template('book.html', data=data, comments=comments, average=average, date=date)
+            return render_template('book.html', data=data, comments=comments, average=average, date=generate_date(comments))
         else:
             return render_template('book.html', data=data)
     else:
@@ -127,29 +119,41 @@ def search():
 
 
 @app.route('/modifier', methods=['POST'])
+@login_required
 def modify():
     book_id = request.args.get('id')
     if 'delete' in request.form:
-        handle_modification(request.form, book_id, delete=True)
-        return redirect(url_for('index'))
+        if current_user.id != execute_query("SELECT user_id FROM books WHERE id=?", [book_id], fetchone=True)[0]:
+            flash('ERREUR')
+            return redirect(url_for('livre', id=book_id))
+        else:
+            handle_modification(request.form, book_id, delete=True)
+            return redirect(url_for('index'))
     else:
-        book_id = handle_modification(request.form, book_id)
+        book_id = handle_modification(request.form, book_id, user_id=current_user.id)
         return redirect(url_for('livre', id=book_id))
 
 
 @app.route('/commenter', methods=['POST'])
+@login_required
 def comment():
     book_id = request.args.get('id')
     if 'delete' in request.form:
-        modify_comment('delete', request.form['delete'])
+        if current_user.id == execute_query("SELECT user_id FROM comments WHERE id=?", [request.form['delete']],fetchone=True)[0]:
+            modify_comment('delete', request.form['delete'])
+        else:
+            flash('ERREUR')
     elif 'signal' in request.form:
         modify_comment('signal', request.form['signal'])
     elif 'modify' in request.form:
-        modify_comment('modify', request.form['modify'], request.form)
+        if current_user.id == execute_query("SELECT user_id FROM comments WHERE id=?", [request.form['modify']],fetchone=True)[0]:
+            modify_comment('modify', request.form['modify'], request.form)
+        else:
+            flash('ERREUR')
     else:
         execute_query(
-            "INSERT INTO comments (book_id, comment, rating) VALUES (?, ?, ?)",
-            [book_id, request.form['comment'], request.form['rating']],
+            "INSERT INTO comments (book_id, comment, rating,user_id) VALUES (?, ?, ?,?)",
+            [book_id, request.form['comment'], request.form['rating'], current_user.id],
             commit=True
         )
     return redirect(url_for('livre', id=book_id))

@@ -337,6 +337,10 @@ footer div {
     flex-direction: column;
 }
 
+.start {
+    align-items: flex-start;
+}
+
 .column2 {
     display: flex;
     gap: 0.2rem;

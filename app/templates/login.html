@@ -15,7 +15,12 @@
             </div>
             <label>
                 <span>Adresse mail</span>
-                <input type="text" name="email" required>
+                <input type="text" name="email" required
+                {% if not register %}
+                    {% if email %}
+                        value="{{ email }}"
+                    {% endif %}
+                {% endif %}>
             </label>
             <label>
                 <span>Mot de passe</span>
@@ -41,11 +46,21 @@
             </div>
             <label>
                 <span>Nom complet</span>
-                <input type="text" name="name" required>
+                <input type="text" name="name" required
+                        {% if register %}
+                            {% if name %}
+                       value="{{ name }}"
+                            {% endif %}
+                        {% endif %}>
             </label>
             <label>
                 <span>Adresse mail</span>
-                <input type="email" name="email" required>
+                <input type="email" name="email" required
+                        {% if register %}
+                            {% if email %}
+                       value="{{ email }}"
+                            {% endif %}
+                        {% endif %}>
             </label>
             <label>
                 <span>Mot de passe</span>

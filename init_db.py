@@ -6,11 +6,14 @@ def init_db(add_content=False):
     conn = sqlite3.connect('instance/books.db')
     cur = conn.cursor()
     cur.execute('''create table books (
-                        id     INTEGER
+                        id      INTEGER
                             primary key autoincrement,
-                        title  TEXT    not null,
-                        author TEXT    not null,
-                        year   INTEGER not null
+                        title   TEXT    not null,
+                        author  TEXT    not null,
+                        year    INTEGER not null,
+                        user_id INTEGER not null 
+                            references users,
+                        unique (title, author)
                     );''')
     cur.execute('''create table comments (
                         id      INTEGER
@@ -21,8 +24,7 @@ def init_db(add_content=False):
                         comment TEXT    not null,
                         rating  INTEGER not null,
                         user_id INTEGER
-                            references users
-                                on delete cascade,
+                            references users,
                         date    INTEGER   default (strftime('%s', 'now')),
                         signal INTEGER default 0,
                         check (rating >= 0 AND rating <= 5)
@@ -31,29 +33,29 @@ def init_db(add_content=False):
                         id      INTEGER
                             primary key autoincrement,
                         name    TEXT    not null,
-                        hash    TEXT    not null,
-                        email   TEXT    unique not null
+                        email   TEXT    unique not null,
+                        hash    TEXT    not null
                     );''')
     cur.execute("create index idx_book_id on comments(book_id);")
     if add_content:
         cur.execute("insert into users(name, hash, email) values(?,?,?)",("Louis Chauvet-Villaret","test","louis@revuejazz.fr"))
-        cur.executemany("insert into books(title,author,year) values(?, ?, ?)", [
-            ("1984", "Orwell", 1949),
-            ("Dune", "Herbert", 1965),
-            ("Fondation", "Asimov", 1951),
-            ("Le meilleur des mondes", "Huxley", 1931),
-            ("Fahrenheit 451", "Bradbury", 1953),
-            ("Ubik", "K.Dick", 1969),
-            ("Chroniques martiennes", "Bradbury", 1950),
-            ("La nuit des temps", "Barjavel", 1968),
-            ("Blade Runner", "K.Dick", 1968),
-            ("Les Robots", "Asimov", 1950),
-            ("La Planète des singes", "Boulle", 1963),
-            ("Ravage", "Barjavel", 1943),
-            ("Le Maître du Haut Château", "K.Dick", 1962),
-            ("Le monde des Ā", "Van Vogt", 1945),
-            ("La Fin de l'éternité", "Asimov", 1955),
-            ("De la Terre à la Lune", "Verne", 1865)
+        cur.executemany("insert into books(title,author,year, user_id) values(?, ?, ?,?)", [
+            ("1984", "Orwell", 1949, 1),
+            ("Dune", "Herbert", 1965, 1),
+            ("Fondation", "Asimov", 1951, 1),
+            ("Le meilleur des mondes", "Huxley", 1931, 1),
+            ("Fahrenheit 451", "Bradbury", 1953, 1),
+            ("Ubik", "K.Dick", 1969, 1),
+            ("Chroniques martiennes", "Bradbury", 1950, 1),
+            ("La nuit des temps", "Barjavel", 1968, 1),
+            ("Blade Runner", "K.Dick", 1968, 1),
+            ("Les Robots", "Asimov", 1950, 1),
+            ("La Planète des singes", "Boulle", 1963, 1),
+            ("Ravage", "Barjavel", 1943, 1),
+            ("Le Maître du Haut Château", "K.Dick", 1962, 1),
+            ("Le monde des Ā", "Van Vogt", 1945, 1),
+            ("La Fin de l'éternité", "Asimov", 1955, 1),
+            ("De la Terre à la Lune", "Verne", 1865, 1)
         ])
         cur.executemany("insert into comments(book_id, comment, user_id, rating) values (?,?,?,?)", [
             (1,"Une œuvre poignante qui explore les dangers du totalitarisme. Un incontournable pour tous ceux qui s'intéressent à la liberté et à la vérité.",1,5),
