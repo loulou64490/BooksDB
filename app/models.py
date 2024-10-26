@@ -1,4 +1,5 @@
 import sqlite3
+from time import time
 from flask_login import UserMixin
 from app import db, login
 
@@ -19,6 +20,48 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+def generate_date(comments):
+    date = {}
+    for i in comments:
+        d = int(time() - i['date'])
+        if d < 3600:
+            d = d // 60
+            if d == 1:
+                d = str(d) + ' minute'
+            else:
+                d = str(d) + ' minutes'
+        elif d < 86400:
+            d = d // 3600
+            if d == 1:
+                d = str(d) + ' heure'
+            else:
+                d = str(d) + ' heures'
+        elif d < 604800:
+            d = d // 86400
+            if d == 1:
+                d = str(d) + ' jour'
+            else:
+                d = str(d) + ' jours'
+        elif d < 2678400:
+            d = d // 604800
+            if d == 1:
+                d = str(d) + ' semaine'
+            else:
+                d = str(d) + ' semaines'
+        elif d < 31536000:
+            d = str(d // 2678400) + 'mois'
+        else:
+            d = d // 31536000
+            if d == 1:
+                d = str(d) + ' an'
+            else:
+                d = str(d) + ' ans'
+        date[i['id']] = 'il y a ' + d
+        if d=='0 minutes':
+            date[i['id']] = 'à l\'instant'
+    return date
+
+
 def execute_query(query, params=(), fetchone=False, fetchall=False, commit=False):
     with sqlite3.connect('instance/books.db') as conn:
         conn.row_factory = sqlite3.Row
@@ -37,7 +80,7 @@ def execute_query(query, params=(), fetchone=False, fetchall=False, commit=False
         return None
 
 
-def handle_modification(data, book_id=None, delete=False):
+def handle_modification(data, book_id=None, delete=False, user_id=None):
     if delete:
         execute_query("DELETE FROM books WHERE id=?", [book_id], commit=True)
     elif book_id:
@@ -48,8 +91,8 @@ def handle_modification(data, book_id=None, delete=False):
         )
     else:
         cur = execute_query(
-            "INSERT INTO books (title, author, year) VALUES (?, ?, ?)",
-            [data['title'], data['author'], data['year']],
+            "INSERT INTO books (title, author, year, user_id) VALUES (?, ?, ?, ?)",
+            [data['title'], data['author'], data['year'], user_id],
             commit=True
         )
         book_id = cur.lastrowid
