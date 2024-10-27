@@ -142,3 +142,51 @@ document.getElementById('themeSwitcherButton').addEventListener('click', cycleTh
 initializeTheme();
 
 document.body.classList.remove('hidden');
+
+
+document.querySelectorAll('.menu-button').forEach(button => {
+    button.addEventListener('click', (event) => {
+        // Ferme les autres menus ouverts
+        document.querySelectorAll('.menu-popup').forEach(menu => menu.style.display = 'none');
+
+        // Identifie le menu associé
+        const menuId = `comm${button.id}`;
+        const menu = document.getElementById(menuId);
+
+        if (!menu) return; // Si le menu n'existe pas, on arrête ici
+
+        // Affiche ou masque le menu
+        menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'flex' : 'none';
+
+        // Obtient les coordonnées du bouton
+        const buttonRect = button.getBoundingClientRect();
+
+        // Position de base du menu : à droite du bouton
+        let left = buttonRect.right + window.scrollX;
+        let top = buttonRect.top + window.scrollY;
+
+        // Ajuste la position si le menu dépasse à droite
+        if (left + menu.offsetWidth > window.innerWidth + window.scrollX) {
+            left = buttonRect.left + window.scrollX - menu.offsetWidth;
+        }
+
+        // Ajuste la position si le menu dépasse en bas
+        if (top + menu.offsetHeight > window.innerHeight + window.scrollY) {
+            top = buttonRect.bottom + window.scrollY - menu.offsetHeight;
+        }
+
+        // Applique la position finale
+        menu.style.left = `${left}px`;
+        menu.style.top = `${top}px`;
+
+        // Empêche l'événement click de se propager au document
+        event.stopPropagation();
+    });
+});
+
+// Masquer les menus en cliquant en dehors
+document.addEventListener("click", (e) => {
+    document.querySelectorAll(".menu-popup").forEach((menu) => {
+        menu.style.display = "none";
+    });
+});

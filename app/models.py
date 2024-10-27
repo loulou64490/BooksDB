@@ -1,6 +1,6 @@
 import sqlite3
 from time import time
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from app import db, login
 import re
 
@@ -21,7 +21,44 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-def valide_email(email): return bool(re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$', email))
+def val_email(email): return bool(re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$', email))
+
+
+def val_form(form, **expected_fields):
+    # toutes les données sont des chaînes de caractères
+    # donc on tente de les convertir en celle qui sont attendues
+    for field_name, expected_type in expected_fields.items():
+        if field_name not in form: return False
+        value = form[field_name]
+        if expected_type == int:
+            if not value.isdigit():
+                return False
+        elif expected_type == str:
+            if not isinstance(value, expected_type):
+                return False
+        else:
+            raise ValueError('Type de données non supporté')
+    return True
+
+
+def val_book(val, own=False):
+    val = execute_query("SELECT user_id FROM books WHERE id=?", (val,), fetchone=True)
+    if val:
+        if own:
+            return current_user.id == val['user_id']
+        else:
+            return True
+    return False
+
+
+def val_comment(val, own=False):
+    val = execute_query("SELECT user_id FROM comments WHERE id=?", (val,), fetchone=True)
+    if val:
+        if own:
+            return current_user.id == val['user_id']
+        else:
+            return True
+    return False
 
 
 def generate_date(comments):
@@ -70,6 +107,7 @@ def execute_query(query, params=(), fetchone=False, fetchall=False, commit=False
     with sqlite3.connect('instance/books.db') as conn:
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
+        cur.execute("PRAGMA foreign_keys = ON")
         cur.execute(query, params)
 
         if commit:
@@ -82,37 +120,5 @@ def execute_query(query, params=(), fetchone=False, fetchall=False, commit=False
         if fetchall:
             return cur.fetchall()
         return None
-
-
-def handle_modification(data, book_id=None, delete=False, user_id=None):
-    if delete:
-        execute_query("DELETE FROM books WHERE id=?", [book_id], commit=True)
-    elif book_id:
-        execute_query(
-            "UPDATE books SET title=?, author=?, year=? WHERE id=?",
-            [data['title'], data['author'], data['year'], book_id],
-            commit=True
-        )
-    else:
-        cur = execute_query(
-            "INSERT INTO books (title, author, year, user_id) VALUES (?, ?, ?, ?)",
-            [data['title'], data['author'], data['year'], user_id],
-            commit=True
-        )
-        book_id = cur.lastrowid
-    return book_id
-
-
-def modify_comment(action, comment_id, form_data=None):
-    if action == 'delete':
-        execute_query("DELETE FROM comments WHERE id=?", [comment_id], commit=True)
-    elif action == 'signal':
-        execute_query("UPDATE comments SET signal=signal+1 WHERE id=?", [comment_id], commit=True)
-        signal = execute_query("SELECT signal FROM comments WHERE id=?", [comment_id], fetchone=True)[0]
-        if signal > 5:
-            execute_query("DELETE FROM comments WHERE id=?", [comment_id], commit=True)
-    elif action == 'modify' and form_data:
-        execute_query("UPDATE comments SET comment=?, rating=? WHERE id=?",
-                      [form_data['comment'], form_data['rating'], comment_id], commit=True)
 
 # ai = lambda message:chat(model='qwen2.5:0.5b', messages=[{'role': 'user', 'content': message}, ])['message']['content']

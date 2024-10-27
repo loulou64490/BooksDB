@@ -16,12 +16,10 @@ from app import app
 # TODO: réécrire CSS
 # TODO: améliorer commentaires
 # like dislike
-# date commentaire
 # réponses ??? non je pense pas
-# TODO: améliorer compte
-# vérification info entrée (mail) et retourner les erreurs adaptées
 # TODO: meilleur flash
 # TODO: tout faire avec SQALchemy ??
+# TODO: panneau admin
 
 if __name__ == '__main__':
     app.run(debug=True)
