@@ -18,24 +18,24 @@
         <div class="column">
             <p class="name">Les mieux notés</p>
             {% for i in data['rate'] %}
-                <a href="{{ url_for('livre') }}?id={{ i['id'] }}">{{ i['title'] }}
+                <a href="{{ url_for('book') }}?id={{ i['id'] }}">{{ i['title'] }}
                     par {{ i['author'] }}, {{ i['year'] }}</a>
             {% endfor %}
             <p class="name">Derniers ajoutés</p>
             {% for i in data['recent'] %}
-                <a href="{{ url_for('livre') }}?id={{ i['id'] }}">{{ i['title'] }}
+                <a href="{{ url_for('book') }}?id={{ i['id'] }}">{{ i['title'] }}
                     par {{ i['author'] }}, {{ i['year'] }}</a>
             {% endfor %}
         </div>
         <div class="column">
             <p class="name">Les plus commentés</p>
             {% for i in data['comment'] %}
-                <a href="{{ url_for('livre') }}?id={{ i['id'] }}">{{ i['title'] }}
+                <a href="{{ url_for('book') }}?id={{ i['id'] }}">{{ i['title'] }}
                     par {{ i['author'] }}, {{ i['year'] }}</a>
             {% endfor %}
             <p class="name">Derniers commentaires</p>
             {% for i in data['last_comment'] %}
-                <a href="{{ url_for('livre') }}?id={{ i['id'] }}">
+                <a href="{{ url_for('book') }}?id={{ i['id'] }}">
                     <p class="index"> {{ i['title'] }} : {{ i['rating'] }}/5 {{ i['comment'] }}</p></a>
             {% endfor %}
         </div>

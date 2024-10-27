@@ -13,6 +13,7 @@ def init_db(add_content=False):
                         year    INTEGER not null,
                         user_id INTEGER not null 
                             references users,
+                        signal  INTEGER default 0,
                         unique (title, author)
                     );''')
     cur.execute('''create table comments (

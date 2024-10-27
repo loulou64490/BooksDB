@@ -116,7 +116,7 @@ def account(form=None):
 
 
 @app.route('/livre')
-def livre():
+def book():
     book_id = request.args.get('id')
     data = execute_query("SELECT * FROM books WHERE id=?", [book_id], fetchone=True)
     if data:
@@ -143,84 +143,88 @@ def search(form=None):
             ['%' + form['query'] + '%'] * 3, fetchall=True
         )
         if len(data) == 1:
-            return redirect(url_for('livre', id=data[0]['id']))
+            return redirect(url_for('book', id=data[0]['id']))
     else:
         data = execute_query("SELECT * FROM books", fetchall=True)
     return render_template('search.html', query=form['query'], data=data)
 
 
-@app.route('/modifier', methods=['POST'])
+@app.route('/edit', methods=['POST'])
 @login_required
-def modify():
-    book_id = request.args.get('id')
-    if 'delete' in request.form:
-        if current_user.id != execute_query("SELECT user_id FROM books WHERE id=?", [book_id], fetchone=True)[0]:
-            flash('ERREUR')
-            return redirect(url_for('livre', id=book_id))
-        else:
-            execute_query("DELETE FROM books WHERE id=?", [book_id], commit=True)
-            flash('Livre supprimé')
-            return redirect(url_for('index'))
-    else:
-        if book_id:
-            if current_user.id != execute_query("SELECT user_id FROM books WHERE id=?", [book_id], fetchone=True)[0]:
-                execute_query(
-                    "UPDATE books SET title=?, author=?, year=? WHERE id=?",
-                    [request.form['title'], request.form['author'], request.form['year'], book_id],
-                    commit=True
-                )
-                flash('Livre modifié')
-                return redirect(url_for('livre', id=book_id))
-            else:
-                flash('ERREUR')
-                return redirect(url_for('livre', id=book_id))
-        else:
-            cur = execute_query(
-                "INSERT INTO books (title, author, year, user_id) VALUES (?, ?, ?, ?)",
-                [request.form['title'], request.form['author'], request.form['year'], current_user.id],
-                commit=True
-            )
-            book_id = cur.lastrowid
-            flash('Livre ajouté')
-            return redirect(url_for('livre', id=book_id))
-
-
-@app.route('/comment', methods=['POST'])
-@login_required
-def comment():
-    form = request.form
-    actions = {
-        'add': {
-            'validate': lambda: val_form(form, comment=str, rating=int, book_id=int) and val_book(form['book_id']),
-            'query': "INSERT INTO comments (book_id, comment, rating,user_id) VALUES (?, ?, ?,?)",
-            'params': lambda: [form['book_id'], form['comment'], form['rating'], current_user.id]
-        },
-        'modify': {
-            'validate': lambda: val_form(form, comment=str, rating=int, book_id=int) and val_comment(form['comm_id'],
-                                                                                                     True),
-            'query': "UPDATE comments SET comment=?, rating=? WHERE id=?",
-            'params': lambda: [form['comment'], form['rating'], form['comm_id']]
-        },
-        'delete': {
-            'validate': lambda: val_form(form, comm_id=int, book_id=int) and val_comment(form['comm_id'], True),
-            'query': "DELETE FROM comments WHERE id=?",
-            'params': lambda: [form['comm_id']]
-        },
-        'signal': {
-            'validate': lambda: val_form(form, comm_id=int) and val_comment(form['comm_id']),
-            'query': "UPDATE comments SET signal=1 WHERE id=?",
-            'params': lambda: [form['comm_id']]
+def edit():
+    form = request.form.to_dict()
+    if form['type'] == 'book':
+        actions = {
+            'add': {
+                'validate': lambda: val_form(form, author=str, year=str),
+                'query': "INSERT INTO books (title, author, year, user_id) VALUES (?, ?, ?, ?)",
+                'params': lambda: [form['title'], form['author'], form['year'], current_user.id],
+                'flash': 'Livre ajouté'
+            },
+            'modify': {
+                'validate': lambda: val_form(form, year=int) and val_book(form['book_id'], True),
+                'query': "UPDATE books SET title=?, author=?, year=? WHERE id=?",
+                'params': lambda: [form['title'], form['author'], form['year'], form['book_id']],
+                'flash': 'Livre modifié'
+            },
+            'delete': {
+                'validate': lambda: val_book(form['book_id'], True),
+                'query': "DELETE FROM books WHERE id=?",
+                'params': lambda: [form['book_id']],
+                'flash': 'Livre supprimé'
+            },
+            'signal': {
+                'validate': lambda: val_book(form['book_id']),
+                'query': "UPDATE books SET signal=1 WHERE id=?",
+                'params': lambda: [form['book_id']],
+                'flash': 'Livre signalé'
+            }
         }
-    }
+    elif form['type'] == 'comment':
+        actions = {
+            'add': {
+                'validate': lambda: val_form(form, rating=int) and val_book(form['book_id']),
+                'query': "INSERT INTO comments (book_id, comment, rating,user_id) VALUES (?, ?, ?,?)",
+                'params': lambda: [form['book_id'], form['comment'], form['rating'], current_user.id],
+                'flash': 'Commentaire publié'
+            },
+            'modify': {
+                'validate': lambda: val_form(form, rating=int) and val_comment(form['comm_id'], True),
+                'query': "UPDATE comments SET comment=?, rating=? WHERE id=?",
+                'params': lambda: [form['comment'], form['rating'], form['comm_id']],
+                'flash': 'Commentaire modifié'
+            },
+            'delete': {
+                'validate': lambda: val_form(form, comm_id=int) and val_comment(form['comm_id'], True),
+                'query': "DELETE FROM comments WHERE id=?",
+                'params': lambda: [form['comm_id']],
+                'flash': 'Commentaire supprimé'
+            },
+            'signal': {
+                'validate': lambda: val_form(form, comm_id=int) and val_comment(form['comm_id']),
+                'query': "UPDATE comments SET signal=1 WHERE id=?",
+                'params': lambda: [form['comm_id']],
+                'flash': 'Commentaire signalé'
+            }
+        }
+    else:
+        flash('ERREUR')
+        return redirect(url_for('index'))
     for action, details in actions.items():
         if action in form:
             if details['validate']():
                 execute_query(details['query'], details['params'](), commit=True)
+                flash(details['flash'])
+                if form['type'] == 'book':
+                    if action == 'add':
+                        form['book_id'] = execute_query("SELECT id FROM books order by id desc limit 1", fetchone=True)[0]
+                    elif action == 'delete':
+                        return redirect(url_for('index'))
+                break
             else:
                 flash('ERREUR')
                 return redirect(url_for('index'))
-    return redirect(url_for('livre', id=form['book_id']))
-
+    return redirect(url_for('book', id=form['book_id']))
 
 @app.route('/admin')
 @login_required

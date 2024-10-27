@@ -43,21 +43,13 @@ def val_form(form, **expected_fields):
 
 def val_book(val, own=False):
     val = execute_query("SELECT user_id FROM books WHERE id=?", (val,), fetchone=True)
-    if val:
-        if own:
-            return current_user.id == val['user_id']
-        else:
-            return True
+    if val: return (current_user.id == val['user_id']) == own
     return False
 
 
 def val_comment(val, own=False):
     val = execute_query("SELECT user_id FROM comments WHERE id=?", (val,), fetchone=True)
-    if val:
-        if own:
-            return current_user.id == val['user_id']
-        else:
-            return True
+    if val: return (current_user.id == val['user_id']) == own
     return False
 
 
