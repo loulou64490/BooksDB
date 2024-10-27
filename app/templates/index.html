@@ -6,37 +6,37 @@
     <div class="flex space max">
         <div class="full">
             {% if current_user.is_authenticated %}
-            <h1>Bienvenue {{ current_user.name }} !</h1>
+                <h1>Bienvenue {{ current_user.name }} !</h1>
             {% else %}
-            <h1>Bienvenue sur BooksDB</h1>
+                <h1>Bienvenue sur BooksDB</h1>
             {% endif %}
             <div>Explorez et partagez des livres</div>
         </div>
         <img class="hidden" src="{{ url_for('static', filename='books.svg') }}" alt="Illustration de librairie">
     </div>
-    <div class="grid-comment top">
-        <div class="result">
+    <div class="grid-index top welcome">
+        <div class="column">
             <p class="name">Les mieux notés</p>
             {% for i in data['rate'] %}
-                <a class="hover button" href="{{ url_for('livre') }}?id={{ i['id'] }}">{{ i['title'] }}
+                <a href="{{ url_for('livre') }}?id={{ i['id'] }}">{{ i['title'] }}
                     par {{ i['author'] }}, {{ i['year'] }}</a>
             {% endfor %}
             <p class="name">Derniers ajoutés</p>
             {% for i in data['recent'] %}
-                <a class="hover button" href="{{ url_for('livre') }}?id={{ i['id'] }}">{{ i['title'] }}
+                <a href="{{ url_for('livre') }}?id={{ i['id'] }}">{{ i['title'] }}
                     par {{ i['author'] }}, {{ i['year'] }}</a>
             {% endfor %}
         </div>
-        <div class="result">
+        <div class="column">
             <p class="name">Les plus commentés</p>
             {% for i in data['comment'] %}
-                <a class="hover button" href="{{ url_for('livre') }}?id={{ i['id'] }}">{{ i['title'] }}
+                <a href="{{ url_for('livre') }}?id={{ i['id'] }}">{{ i['title'] }}
                     par {{ i['author'] }}, {{ i['year'] }}</a>
             {% endfor %}
             <p class="name">Derniers commentaires</p>
             {% for i in data['last_comment'] %}
-                <a class="hover button" href="{{ url_for('livre') }}?id={{ i['id'] }}">{{ i['title'] }}
-                    par {{ i['author'] }}, {{ i['year'] }}</a>
+                <a href="{{ url_for('livre') }}?id={{ i['id'] }}">
+                    <p class="index"> {{ i['title'] }} : {{ i['rating'] }}/5 {{ i['comment'] }}</p></a>
             {% endfor %}
         </div>
     </div>

@@ -1,11 +1,13 @@
+from sqlite3 import IntegrityError
 from app import app, db
 from flask import render_template, request, redirect, flash, url_for, session
 from flask_login import login_user, logout_user, login_required, current_user
-from app.models import execute_query, handle_modification, modify_comment, User, generate_date, valide_email
+from app.models import execute_query, User, generate_date, val_email, val_form, val_book, val_comment
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
 
+# décorateur post/redirect/get
 def prg(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
@@ -16,6 +18,7 @@ def prg(func):
             return redirect(request.url)
         data = session.pop("form_data", {})
         return func(form=data, *args, **kwargs)
+
     return decorated_function
 
 
@@ -38,7 +41,7 @@ def index():
             "GROUP BY books.id ORDER BY count DESC LIMIT 5", fetchall=True),
         'recent': execute_query("SELECT * FROM books ORDER BY id DESC LIMIT 5", fetchall=True),
         'last_comment': execute_query(
-            "SELECT books.id, title, author, year, comment, rating "
+            "SELECT books.id, title, comment, rating "
             "FROM books LEFT JOIN comments ON books.id=comments.book_id "
             "ORDER BY comments.id DESC LIMIT 5", fetchall=True)
     }
@@ -54,7 +57,7 @@ def login(form=None):
         errors = None
         if not form['email'] or not form['password']:
             errors = 'Veuillez remplir tous les champs'
-        elif not valide_email(form['email']):
+        elif not val_email(form['email']):
             errors = 'Adresse mail invalide'
 
         if form['submit'] == 'login':
@@ -80,8 +83,7 @@ def login(form=None):
                 return render_template('login.html', errors=errors, name=form['name'],
                                        email=form['email'], register=True)
 
-            user = User(name=form['name'], hash=generate_password_hash(form['password']),
-                        email=form['email'])
+            user = User(name=form['name'], hash=generate_password_hash(form['password']), email=form['email'])
             db.session.add(user)
             db.session.commit()
             login_user(user, remember=True)
@@ -134,8 +136,8 @@ def livre():
 
 @app.route('/recherche', methods=['POST', 'GET'])
 @prg
-def search(form):
-    if form['query']:
+def search(form=None):
+    if form:
         data = execute_query(
             "SELECT * FROM books WHERE title LIKE ? OR author LIKE ? OR year LIKE ?",
             ['%' + form['query'] + '%'] * 3, fetchall=True
@@ -144,7 +146,7 @@ def search(form):
             return redirect(url_for('livre', id=data[0]['id']))
     else:
         data = execute_query("SELECT * FROM books", fetchall=True)
-    return render_template('search.html',query=form['query'], data=data)
+    return render_template('search.html', query=form['query'], data=data)
 
 
 @app.route('/modifier', methods=['POST'])
@@ -156,35 +158,73 @@ def modify():
             flash('ERREUR')
             return redirect(url_for('livre', id=book_id))
         else:
-            handle_modification(request.form, book_id, delete=True)
+            execute_query("DELETE FROM books WHERE id=?", [book_id], commit=True)
+            flash('Livre supprimé')
             return redirect(url_for('index'))
     else:
-        book_id = handle_modification(request.form, book_id, user_id=current_user.id)
-        return redirect(url_for('livre', id=book_id))
+        if book_id:
+            if current_user.id != execute_query("SELECT user_id FROM books WHERE id=?", [book_id], fetchone=True)[0]:
+                execute_query(
+                    "UPDATE books SET title=?, author=?, year=? WHERE id=?",
+                    [request.form['title'], request.form['author'], request.form['year'], book_id],
+                    commit=True
+                )
+                flash('Livre modifié')
+                return redirect(url_for('livre', id=book_id))
+            else:
+                flash('ERREUR')
+                return redirect(url_for('livre', id=book_id))
+        else:
+            cur = execute_query(
+                "INSERT INTO books (title, author, year, user_id) VALUES (?, ?, ?, ?)",
+                [request.form['title'], request.form['author'], request.form['year'], current_user.id],
+                commit=True
+            )
+            book_id = cur.lastrowid
+            flash('Livre ajouté')
+            return redirect(url_for('livre', id=book_id))
 
 
-@app.route('/commenter', methods=['POST'])
+@app.route('/comment', methods=['POST'])
 @login_required
 def comment():
-    book_id = request.args.get('id')
-    if 'delete' in request.form:
-        if current_user.id == \
-                execute_query("SELECT user_id FROM comments WHERE id=?", [request.form['delete']], fetchone=True)[0]:
-            modify_comment('delete', request.form['delete'])
-        else:
-            flash('ERREUR')
-    elif 'signal' in request.form:
-        modify_comment('signal', request.form['signal'])
-    elif 'modify' in request.form:
-        if current_user.id == \
-                execute_query("SELECT user_id FROM comments WHERE id=?", [request.form['modify']], fetchone=True)[0]:
-            modify_comment('modify', request.form['modify'], request.form)
-        else:
-            flash('ERREUR')
-    else:
-        execute_query(
-            "INSERT INTO comments (book_id, comment, rating,user_id) VALUES (?, ?, ?,?)",
-            [book_id, request.form['comment'], request.form['rating'], current_user.id],
-            commit=True
-        )
-    return redirect(url_for('livre', id=book_id))
+    form = request.form
+    actions = {
+        'add': {
+            'validate': lambda: val_form(form, comment=str, rating=int, book_id=int) and val_book(form['book_id']),
+            'query': "INSERT INTO comments (book_id, comment, rating,user_id) VALUES (?, ?, ?,?)",
+            'params': lambda: [form['book_id'], form['comment'], form['rating'], current_user.id]
+        },
+        'modify': {
+            'validate': lambda: val_form(form, comment=str, rating=int, book_id=int) and val_comment(form['comm_id'],
+                                                                                                     True),
+            'query': "UPDATE comments SET comment=?, rating=? WHERE id=?",
+            'params': lambda: [form['comment'], form['rating'], form['comm_id']]
+        },
+        'delete': {
+            'validate': lambda: val_form(form, comm_id=int, book_id=int) and val_comment(form['comm_id'], True),
+            'query': "DELETE FROM comments WHERE id=?",
+            'params': lambda: [form['comm_id']]
+        },
+        'signal': {
+            'validate': lambda: val_form(form, comm_id=int) and val_comment(form['comm_id']),
+            'query': "UPDATE comments SET signal=1 WHERE id=?",
+            'params': lambda: [form['comm_id']]
+        }
+    }
+    for action, details in actions.items():
+        if action in form:
+            if details['validate']():
+                execute_query(details['query'], details['params'](), commit=True)
+            else:
+                flash('ERREUR')
+                return redirect(url_for('index'))
+    return redirect(url_for('livre', id=form['book_id']))
+
+
+@app.route('/admin')
+@login_required
+def admin():
+    if current_user.id != 1:
+        return render_template('errors/404.html'), 404
+    return render_template('admin.html')

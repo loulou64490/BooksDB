@@ -2,22 +2,26 @@
     --1: rgb(28, 27, 29);
     --2: rgb(82, 73, 79);
     --3: rgb(104, 97, 102);
+
     --bg: rgb(248, 241, 246);
     --rgbg: 248, 241, 246;
-    --bg3: rgb(213, 208, 211);
     --bg2: rgb(230, 223, 228);
 
     color-scheme: light;
+
+    --round: 6px;
+    --shadow: 4px 4px 0 var(--2);
+    --border: 2px solid var(--2);
 }
 
 [data-theme="dark"] {
     --1: rgb(230, 225, 227);
-    --2: rgb(120, 111, 114);
+    --2: rgb(80, 65, 80);
     --3: rgb(136, 127, 130);
-    --bg: rgb(33, 31, 33);
-    --rgbg: 33, 31, 33;
-    --bg3: rgb(48, 46, 48);
-    --bg2: rgb(42, 40, 42);
+
+    --bg: rgb(19, 14, 19);
+    --rgbg: 19, 14, 19;
+    --bg2: rgb(37, 31, 37);
 
     color-scheme: dark;
 }
@@ -33,6 +37,8 @@
 
 *:focus {
     outline: none;
+    /*outline: 2px dashed var(--3);*/
+    /*outline-offset: 2px;*/
 }
 
 body, html {
@@ -66,7 +72,7 @@ a {
     text-decoration: none;
 }
 
-.underline{
+.underline {
     cursor: pointer;
 }
 
@@ -80,17 +86,28 @@ a {
     gap: 1rem;
 }
 
+.shadow {
+    box-shadow: var(--shadow);
+    border: var(--border);
+    border-radius: var(--round);
+    background: var(--bg2);
+}
+
 .hover {
-    outline: 2px solid var(--2);
+    border: var(--border);
+    border-radius: var(--round);
+    box-shadow: var(--shadow);
+    padding: 0.6rem;
+    background: var(--bg2);
 }
 
 .hover:hover {
     transform: translate(-2px, -2px);
-    box-shadow: 4px 4px 0 var(--2);
+    box-shadow: 6px 6px 0 var(--2);
 }
 
 .hover:active {
-    transform: translate(2px, 2px);
+    transform: translate(4px, 4px);
     box-shadow: 0 0 0 var(--2);
 }
 
@@ -111,20 +128,14 @@ header .title {
 }
 
 header form {
-    background: var(--bg2);
-    outline: 2px solid var(--2);
-}
-
-header a img {
-    height: 3rem;
-    width: auto;
+    padding: 0 0.6rem;
 }
 
 input, textarea {
     background: none;
-    padding: 0.6rem;
     font-size: 1rem;
     border: none;
+    padding: 0.8rem 0;
 }
 
 input::placeholder, textarea::placeholder {
@@ -142,7 +153,7 @@ button svg {
 }
 
 button path {
-    stroke: var(--2);
+    stroke: var(--1);
 }
 
 .content {
@@ -176,24 +187,24 @@ main h1 {
 }
 
 button {
-    background: var(--bg2);
+    background: none;
     border: none;
     cursor: pointer;
     font-size: 1rem;
-    padding: 0.6rem;
-}
-
-header button {
-    padding: 0.2rem;
 }
 
 main label {
     display: flex;
     flex-direction: column;
+    gap: 0.5rem;
 }
 
 main textarea, main input {
-    border: 2px solid var(--2);
+    box-shadow: var(--shadow);
+    border: var(--border);
+    border-radius: var(--round);
+    padding: 0.6rem;
+    background: var(--bg2);
 }
 
 main textarea {
@@ -201,19 +212,10 @@ main textarea {
     height: 6rem;
 }
 
-.button {
-    padding: 0.6rem;
-    background: var(--bg2);
-}
-
 .result {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-}
-
-.grid-comment a {
-    background: var(--bg2);
 }
 
 footer {
@@ -243,28 +245,31 @@ footer div {
 
 .popup {
     background: var(--bg);
-    min-width: 20rem;
-    width: fit-content;
-    padding: 1rem;
-    border: 2px solid var(--2);
+    width: 25rem;
+    padding: 2rem;
     z-index: 2;
+    box-shadow: var(--shadow);
+    border: var(--border);
+    border-radius: var(--round);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
 
-.popup2{
+.popup2 {
     min-width: 0;
 }
 
-.grid-comment {
+.grid-index {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    grid-auto-flow: dense;
+    gap: 1rem;
 }
 
 .box {
     background: var(--bg2);
+    border-radius: var(--round);
     padding: 1rem;
-    /*border: 1px solid var(--bg3);*/
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -325,12 +330,6 @@ footer div {
     border: 2px solid var(--2);
 }
 
-.error {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
 .column {
     display: flex;
     gap: 1rem;
@@ -373,7 +372,7 @@ footer div {
     background: var(--bg2);
 }
 
-.login{
+.login {
     max-width: 30rem;
     margin: 0 auto;
 }
@@ -382,7 +381,7 @@ footer div {
     display: none;
 }
 
-.messages{
+.messages {
     z-index: 9999;
     position: fixed;
     top: 0;
@@ -391,9 +390,49 @@ footer div {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    max-width: calc((100% - 70rem)/2 - 1rem);
+    max-width: calc((100% - 70rem) / 2 - 1rem);
 }
 
-.messages div{
+.messages div {
     width: fit-content;
+}
+
+.index {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+}
+
+.welcome a {
+    word-break: break-word;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    padding: 0.6rem;
+    background: var(--bg2);
+    border-radius: var(--round);
+    border: 2px solid var(--bg);
+    transition: border 0.1s, transform 0.1s;
+}
+
+.welcome a:hover {
+    border: 2px solid var(--2);
+}
+
+.welcome a:active {
+    transform: scale(0.98);
+}
+
+.menu-popup {
+    position: absolute;
+    display: none;
+    flex-direction: column;
+    gap: 1rem;
+    width: fit-content;
+    background: var(--bg);
+    box-shadow: var(--shadow);
+    border: var(--border);
+    border-radius: var(--round);
+    padding: 1rem;
+    z-index: 1;
 }

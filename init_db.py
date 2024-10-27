@@ -26,7 +26,7 @@ def init_db(add_content=False):
                         user_id INTEGER
                             references users,
                         date    INTEGER   default (strftime('%s', 'now')),
-                        signal INTEGER default 0,
+                        signal  INTEGER default 0,
                         check (rating >= 0 AND rating <= 5)
                     );''')
     cur.execute('''create table users (

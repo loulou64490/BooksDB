@@ -7,7 +7,7 @@
         <h1>Compte</h1>
         <div>Connecté en tant que {{ current_user.name }} ({{ current_user.email }})</div>
         <form class="flex" action="{{ url_for("account") }}" method="post">
-            <button class="hover button" type="submit" name="submit" value="logout">Déconnexion</button>
+            <button class="hover" type="submit" name="submit" value="logout">Déconnexion</button>
         </form>
         <form class="column start top" action="{{ url_for("account") }}" method="post">
             <div class="rate">Changer le nom</div>
