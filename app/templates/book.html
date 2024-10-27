@@ -46,10 +46,11 @@
                 </div>
 
                 {% if current_user.is_authenticated %}
-                    <form id="comm{{ comment['id'] }}" class="menu-popup" action="{{ url_for('comment') }}"
+                    <form id="comm{{ comment['id'] }}" class="menu-popup" action="{{ url_for('edit') }}"
                           method="post">
                         <input type="hidden" name="book_id" value="{{ data['id'] }}">
                         <input type="hidden" name="comm_id" value="{{ comment['id'] }}">
+                        <input type="hidden" name="type" value="comment">
                         {% if current_user['id'] == comment['user_id'] %}
                             <button class="hover"
                                     onclick="updateDisplay('mod{{ comment['id'] }}','flex')"
@@ -68,12 +69,13 @@
 
                     {#Pop-up#}
                     {% if current_user['id'] == comment['user_id'] %}
-                        <form class="popup-bg" id="mod{{ comment['id'] }}" action="{{ url_for('comment') }}"
+                        <form class="popup-bg" id="mod{{ comment['id'] }}" action="{{ url_for('edit') }}"
                               method="post">
                             <div class="popup">
                                 <p class="name">Modifier le commentaire</p>
                                 <input type="hidden" name="book_id" value="{{ data['id'] }}">
                                 <input type="hidden" name="comm_id" value="{{ comment['id'] }}">
+                                <input type="hidden" name="type" value="comment">
                                 <label>
                                     <span>Commentaire</span>
                                     <textarea class="break-word" name="comment"
@@ -108,9 +110,10 @@
     {% endif %}
     {% if current_user.is_authenticated %}
         <div class="popup-bg" id="comment">
-            <form class="popup" action="{{ url_for('comment') }}" method="post">
+            <form class="popup" action="{{ url_for('edit') }}" method="post">
                 <p class="name">Commenter {{ data['title'] }}</p>
                 <input type="hidden" name="book_id" value="{{ data['id'] }}">
+                <input type="hidden" name="type" value="comment">
                 <label>
                     <span>Commentaire</span>
                     <textarea class="break-word" name="comment" required></textarea>
@@ -129,9 +132,11 @@
         </div>
         {% if current_user['id'] == data['user_id'] %}
             <div class="popup-bg" id="modify">
-                <form class="popup" action="{{ url_for('modify') }}?id={{ data['id'] }}"
+                <form class="popup" action="{{ url_for('edit') }}"
                       method="post">
                     <p class="name break-word">Modifier {{ data['title'] }}</p>
+                    <input type="hidden" name="book_id" value="{{ data['id'] }}">
+                    <input type="hidden" name="type" value="book">
                     <label>
                         <span>Titre</span>
                         <input class="break-word" type="text" name="title" value="{{ data['title'] }}"
@@ -151,7 +156,7 @@
                         <button class="hover" type="button" onclick="updateDisplay('modify','none')">
                             Annuler
                         </button>
-                        <button class="hover" type="submit">Modifier</button>
+                        <button name="modify" class="hover" type="submit">Modifier</button>
                     </div>
                 </form>
             </div>
@@ -159,9 +164,10 @@
                 <div class="popup">
                     <p class="break-word">Voulez-vous vraiment supprimer {{ data['title'] }} ?</p>
                     <div class="flex">
-                        <button class="hover" onclick="updateDisplay('delete','none')">Annuler
-                        </button>
-                        <form action="{{ url_for('modify') }}?id={{ data['id'] }}" method="post">
+                        <button class="hover" onclick="updateDisplay('delete','none')">Annuler</button>
+                        <form action="{{ url_for('edit') }}" method="post">
+                            <input type="hidden" name="book_id" value="{{ data['id'] }}">
+                            <input type="hidden" name="type" value="book">
                             <button name="delete" class="hover" type="submit">Supprimer</button>
                         </form>
                     </div>

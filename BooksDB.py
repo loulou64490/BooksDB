@@ -21,5 +21,6 @@ from app import app
 # TODO: tout faire avec SQALchemy ??
 # TODO: panneau admin
 
+
 if __name__ == '__main__':
     app.run(debug=True)

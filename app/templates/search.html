@@ -4,10 +4,10 @@
 
 {% block content %}
     {% if data %}
-        <ul class="result">
+        <ul class="column welcome">
             <h1>Résultats</h1>
             {% for book in data %}
-                <a class="hover" href="{{ url_for('livre') }}?id={{ book['id'] }}">{{ book['title'] }} par {{ book['author'] }}, {{ book['year'] }}</a>
+                <a class="" href="{{ url_for('book') }}?id={{ book['id'] }}">{{ book['title'] }} par {{ book['author'] }}, {{ book['year'] }}</a>
             {% endfor %}
         </ul>
     {% else %}

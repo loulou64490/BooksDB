@@ -80,9 +80,10 @@
         {% block content %}{% endblock %}
         {% if current_user.is_authenticated %}
             <div class="popup-bg" id="add">
-                <form class="popup" action="{{ url_for('modify') }}"
+                <form class="popup" action="{{ url_for('edit') }}"
                       method="post">
                     <p class="name">Ajouter un livre</p>
+                    <input type="hidden" name="type" value="book">
                     <label>
                         <span>Titre</span>
                         <input type="text" name="title" required>
@@ -99,7 +100,7 @@
                         <button class="hover" onclick="updateDisplay('add','none')" type="button">
                             Annuler
                         </button>
-                        <button class="hover" type="submit">Ajouter</button>
+                        <button name="add" class="hover" type="submit">Ajouter</button>
                     </div>
                 </form>
             </div>
