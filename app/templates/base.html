@@ -69,10 +69,10 @@
     <div class="content">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
-                <div class="messages">
+                <div id="flash" class="messages column welcome">
                     {% for message in messages %}
-                        <div id="{{ message }}" class="hover"
-                             onclick="loginSwitcher('{{ message }}','none')">{{ message }}</div>
+                        <a id="{{ message }}"
+                             onclick="loginSwitcher('{{ message }}','none')">{{ message }}</a>
                     {% endfor %}
                 </div>
             {% endif %}

@@ -4,7 +4,7 @@ document.oncontextmenu = window.ondragstart = () => false;
 // Éviter le flash de transition de thème au chargement
 window.addEventListener('load', () => {
     const style = document.createElement('style');
-    style.textContent = `*{ transition: background 0.2s, border 0.2s; } .hover { transition: background 0.2s, transform 0.1s, box-shadow 0.1s; }`;
+    style.textContent = `*{ transition: background 0.2s, border 0.2s; }`;
     document.head.appendChild(style);
 });
 
@@ -143,14 +143,13 @@ initializeTheme();
 
 document.body.classList.remove('hidden');
 
-
 document.querySelectorAll('.menu-button').forEach(button => {
     button.addEventListener('click', (event) => {
         // Ferme les autres menus ouverts
         document.querySelectorAll('.menu-popup').forEach(menu => menu.style.display = 'none');
 
         // Identifie le menu associé
-        const menuId = `comm${button.id}`;
+        const menuId = `comm-${button.id}`;
         const menu = document.getElementById(menuId);
 
         if (!menu) return; // Si le menu n'existe pas, on arrête ici
@@ -190,3 +189,8 @@ document.addEventListener("click", (e) => {
         menu.style.display = "none";
     });
 });
+
+// Remplacez 'votreID' par l'ID de votre élément
+setTimeout(function() {
+    document.getElementById('flash').style.display = 'none';
+}, 3000);

@@ -16,6 +16,8 @@ You can add / delete / modify books and comments
 - [ ] English version
 
 ### How to run
+## FAKE TUTORIAL : HOW TO RUN WIP
+
 Generate a virtual environment
 ```bash
 python -m venv venv

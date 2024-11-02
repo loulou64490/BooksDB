@@ -13,8 +13,7 @@ def init_db(add_content=False):
                         year    INTEGER not null,
                         user_id INTEGER not null 
                             references users,
-                        signal  INTEGER default 0,
-                        unique (title, author)
+                        signal  INTEGER default 0
                     );''')
     cur.execute('''create table comments (
                         id      INTEGER
@@ -35,7 +34,9 @@ def init_db(add_content=False):
                             primary key autoincrement,
                         name    TEXT    not null,
                         email   TEXT    unique not null,
-                        hash    TEXT    not null
+                        hash    TEXT    not null,
+                        signal  INTEGER default 0,
+                        admin   INTEGER default 0
                     );''')
     cur.execute("create index idx_book_id on comments(book_id);")
     if add_content:

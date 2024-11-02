@@ -131,6 +131,7 @@ def book():
             return render_template('book.html', data=data, comments=comments, average=average,
                                    date=generate_date(comments))
         return render_template('book.html', data=data)
+    flash('Le livre a surement été supprimé')
     return render_template('errors/404.html'), 404
 
 
@@ -217,7 +218,8 @@ def edit():
                 flash(details['flash'])
                 if form['type'] == 'book':
                     if action == 'add':
-                        form['book_id'] = execute_query("SELECT id FROM books order by id desc limit 1", fetchone=True)[0]
+                        form['book_id'] = execute_query("SELECT id FROM books order by id desc limit 1", fetchone=True)[
+                            0]
                     elif action == 'delete':
                         return redirect(url_for('index'))
                 break
@@ -226,9 +228,161 @@ def edit():
                 return redirect(url_for('index'))
     return redirect(url_for('book', id=form['book_id']))
 
+
 @app.route('/admin')
 @login_required
 def admin():
-    if current_user.id != 1:
+    if current_user.admin == 0:
         return render_template('errors/404.html'), 404
-    return render_template('admin.html')
+    data = {
+        'books': execute_query(
+            "SELECT books.id, title, author, year, name FROM books join users on books.user_id = users.id where books.signal=1",
+            fetchall=True),
+        'comments': execute_query(
+            "SELECT comments.id, comment, rating, name, title, author, date FROM comments join users on users.id = comments.user_id join books on books.id = book_id where comments.signal=1",
+            fetchall=True),
+        'users': execute_query("SELECT id, name, email FROM users where signal=1", fetchall=True)
+    }
+    return render_template('admin.html', data=data, date=generate_date(data['comments']))
+
+
+@app.route('/admin/edit', methods=['POST'])
+@login_required
+def admin_edit():
+    if current_user.admin == 0:
+        return render_template('errors/404.html'), 404
+    form = request.form.to_dict()
+    if form['type'] == 'book':
+        actions = {
+            'delete': {
+                'validate': lambda: val_form(form, book_id=int) and val_book(form['book_id']),
+                'query': "DELETE FROM books WHERE id=?",
+                'params': lambda: [form['book_id']],
+                'flash': 'Livre supprimé'
+            },
+            'validate': {
+                'validate': lambda: val_form(form, book_id=int) and val_book(form['book_id']),
+                'query': "UPDATE books SET signal=0 WHERE id=?",
+                'params': lambda: [form['book_id']],
+                'flash': 'Livre validé'
+            }
+        }
+    elif form['type'] == 'comment':
+        actions = {
+            'delete': {
+                'validate': lambda: val_form(form, comm_id=int) and val_comment(form['comm_id']),
+                'query': "DELETE FROM comments WHERE id=?",
+                'params': lambda: [form['comm_id']],
+                'flash': 'Commentaire supprimé'
+            },
+            'validate': {
+                'validate': lambda: val_form(form, comm_id=int) and val_comment(form['comm_id']),
+                'query': "UPDATE comments SET signal=0 WHERE id=?",
+                'params': lambda: [form['comm_id']],
+                'flash': 'Commentaire validé'
+            }
+        }
+    elif form['type'] == 'user':
+        actions = {
+            'delete': {
+                'validate': lambda: val_form(form, user_id=int),
+                'query': "DELETE FROM users WHERE id=?",
+                'params': lambda: [form['user_id']],
+                'flash': 'Utilisateur supprimé'
+            },
+            'validate': {
+                'validate': lambda: val_form(form, user_id=int),
+                'query': "UPDATE users SET signal=0 WHERE id=?",
+                'params': lambda: [form['user_id']],
+                'flash': 'Utilisateur validé'
+            }
+        }
+    else:
+        flash('ERREUR')
+        return redirect(url_for('admin'))
+    for action, details in actions.items():
+        if action in form:
+            if details['validate']():
+                execute_query(details['query'], details['params'](), commit=True)
+                flash(details['flash'])
+                break
+            else:
+                flash('ERREUR')
+                return redirect(url_for('admin'))
+    return redirect(url_for('admin'))
+
+
+post_action = {
+    'book': {
+        'add': {
+            'validate': None,
+            'query': None,
+            'params': None,
+            'flash': None
+        },
+        'modify': {
+            'validate': None,
+            'query': None,
+            'params': None,
+            'flash': None
+        },
+        'delete': {
+            'validate': None,
+            'query': None,
+            'params': None,
+            'flash': None
+        },
+        'signal': {
+            'validate': None,
+            'query': None,
+            'params': None,
+            'flash': None
+        },
+    },
+    'comment': {
+        'add': {
+            'validate': None,
+            'query': None,
+            'params': None,
+            'flash': None
+        },
+        'modify': {
+            'validate': None,
+            'query': None,
+            'params': None,
+            'flash': None
+        },
+        'delete': {
+            'validate': None,
+            'query': None,
+            'params': None,
+            'flash': None
+        },
+        'signal': {
+            'validate': None,
+            'query': None,
+            'params': None,
+            'flash': None
+        },
+    },
+    'admin': {
+        'book': {
+            'validate': None,
+            'query': None,
+            'params': None,
+            'flash': None
+        },
+        'comment': {
+            'validate': None,
+            'query': None,
+            'params': None,
+            'flash': None
+        },
+        'user': {
+            'validate': None,
+            'query': None,
+            'params': None,
+            'flash': None
+        }
+    }
+}
