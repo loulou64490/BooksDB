@@ -4,4 +4,59 @@
 
 {% block content %}
     <h1>Admin</h1>
+    <div class="column top">
+        {% if data['comments'] %}
+            <form action="{{ url_for('admin_edit') }}" method="post" class="column">
+                <div class="name">Commentaires signalés</div>
+                <input type="hidden" name="type" value="comment">
+                <div class="column">
+                    {% for item in data['comments'] %}
+                        <div class="box2">
+                            <div class="column2">
+                                <div class="flex">
+                                    <p class="comm_note">{{ item['rating'] }}/5</p>
+                                    <div class="flex2">
+                                        <p class="comm_auteur">{{ item['name'] }}</p>
+                                        <p class="comm_date">{{ date[item['id']] }}</p>
+                                    </div>
+                                </div>
+                                <p id="id{{ item['id'] }}" class="comm_comm break-word"
+                                   onclick="expand('id{{ item['id'] }}')">{{ item['comment'] }}</p>
+                            </div>
+                            <div class="flex">
+                                <button type="submit" name="delete" value="{{ item['id'] }}"
+                                        class="icon cross"></button>
+                                <button type="submit" name="validate" value="{{ item['id'] }}"
+                                        class="icon check"></button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </form>
+        {% endif %}
+        {% if data['books'] %}
+            <form action="{{ url_for('admin_edit') }}" method="post" class="column">
+                <input type="hidden" name="type" value="books">
+                <div class="name">Livres signalés</div>
+                <div class="column">
+                    {% for item in data['books'] %}
+                        <div class="box2">
+                            <div>
+                                <p class="comm_date">Ajouté par {{ item['name'] }}</p>
+                                <p class="comm_comm break-word">Titre : {{ item['title'] }}</p>
+                                <p class="comm_comm break-word">Auteur : {{ item['author'] }}</p>
+                                <p class="comm_comm break-word">Années : {{ item['year'] }}</p>
+                            </div>
+                            <div class="flex">
+                                <button type="submit" name="delete" value="{{ item['books.id'] }}"
+                                        class="icon cross"></button>
+                                <button type="submit" name="validate" value="{{ item['books.id'] }}"
+                                        class="icon check"></button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </form>
+        {% endif %}
+    </div>
 {% endblock %}

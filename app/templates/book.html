@@ -13,10 +13,24 @@
                 <p class="name">{{ average }}/5</p>
             {% endif %}
             <button class="hover" onclick="updateDisplay('comment','flex')">Commenter</button>
-            {% if current_user['id'] == data['user_id'] %}
-                <button class="hover" onclick="updateDisplay('modify','flex')">Modifier</button>
-                <button class="hover" onclick="updateDisplay('delete','flex')">Supprimer</button>
+            {% if current_user.is_authenticated %}
+                <div class="menu-button" tabindex="0" id="book-menu">
+                    <div class="square"></div>
+                    <div class="square"></div>
+                    <div class="square"></div>
+                </div>
+                <form id="comm-book-menu" class="menu-popup" action="{{ url_for('edit') }}" method="post">
+                {% if current_user['id'] == data['user_id'] %}
+                    <button type="button" class="hover" onclick="updateDisplay('modify','flex')">Modifier</button>
+                    <button type="button" class="hover" onclick="updateDisplay('delete','flex')">Supprimer</button>
+                {% else %}
+                    <input type="hidden" name="book_id" value="{{ data['id'] }}">
+                    <input type="hidden" name="type" value="book">
+                    <button type="submit" name="signal" class="hover">Signaler</button>
+                {% endif %}
+                </form>
             {% endif %}
+
         </div>
     </div>
     {% if comments %}
@@ -24,7 +38,7 @@
             {% for comment in comments %}
 
                 {#Comment#}
-                <div class="box space">
+                <div class="box">
                     <div class="flex space">
                         <div class="flex">
                             <p class="comm_note">{{ comment['rating'] }}/5</p>
@@ -46,7 +60,7 @@
                 </div>
 
                 {% if current_user.is_authenticated %}
-                    <form id="comm{{ comment['id'] }}" class="menu-popup" action="{{ url_for('edit') }}"
+                    <form id="comm-{{ comment['id'] }}" class="menu-popup" action="{{ url_for('edit') }}"
                           method="post">
                         <input type="hidden" name="book_id" value="{{ data['id'] }}">
                         <input type="hidden" name="comm_id" value="{{ comment['id'] }}">
