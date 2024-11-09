@@ -1,7 +1,6 @@
 import sqlite3
 
 
-
 def init_db(add_content=False):
     conn = sqlite3.connect('instance/books.db')
     cur = conn.cursor()
@@ -13,6 +12,7 @@ def init_db(add_content=False):
                         year    INTEGER not null,
                         user_id INTEGER not null 
                             references users,
+                        date    INTEGER default (strftime('%s', 'now')),
                         signal  INTEGER default 0
                     );''')
     cur.execute('''create table comments (
@@ -25,7 +25,7 @@ def init_db(add_content=False):
                         rating  INTEGER not null,
                         user_id INTEGER
                             references users,
-                        date    INTEGER   default (strftime('%s', 'now')),
+                        date    INTEGER default (strftime('%s', 'now')),
                         signal  INTEGER default 0,
                         check (rating >= 0 AND rating <= 5)
                     );''')
@@ -35,6 +35,8 @@ def init_db(add_content=False):
                         name    TEXT    not null,
                         email   TEXT    unique not null,
                         hash    TEXT    not null,
+                        date    INTEGER default (strftime('%s', 'now')),
+                        last    INTEGER default (strftime('%s', 'now')),
                         signal  INTEGER default 0,
                         admin   INTEGER default 0
                     );''')

@@ -19,9 +19,9 @@
         <div class="flex space">
             <div class="flex">
                 <a class="title underline" href="/">BooksDB</a>
-                <form class="flex shadow" action="{{ url_for('search') }}" method="post">
+                <form class="flex shadow" action="{{ url_for('search') }}" method="get">
                     <label class="flex">
-                        <input autocomplete="off" type="text" name="query" placeholder="Rechercher..."
+                        <input autocomplete="off" type="text" name="q" placeholder="Rechercher..."
                                {% if query %}value="{{ query }}"{% endif %}>
                     </label>
                     <button class="flex" type="submit">
@@ -72,7 +72,7 @@
                 <div id="flash" class="messages column welcome">
                     {% for message in messages %}
                         <a id="{{ message }}"
-                             onclick="loginSwitcher('{{ message }}','none')">{{ message }}</a>
+                           onclick="loginSwitcher('{{ message }}','none')">{{ message }}</a>
                     {% endfor %}
                 </div>
             {% endif %}
@@ -80,27 +80,27 @@
         {% block content %}{% endblock %}
         {% if current_user.is_authenticated %}
             <div class="popup-bg" id="add">
-                <form class="popup" action="{{ url_for('edit') }}"
+                <form class="popup" action="{{ url_for('post_book') }}"
                       method="post">
+                    {{ book.csrf_token }}
                     <p class="name">Ajouter un livre</p>
-                    <input type="hidden" name="type" value="book">
                     <label>
                         <span>Titre</span>
-                        <input type="text" name="title" required>
+                        {{ book.title() }}
                     </label>
                     <label>
                         <span>Auteur</span>
-                        <input type="text" name="author" required>
+                        {{ book.author() }}
                     </label>
                     <label>
                         <span>Année</span>
-                        <input type="number" name="year" required>
+                        {{ book.year() }}
                     </label>
                     <div class="flex">
                         <button class="hover" onclick="updateDisplay('add','none')" type="button">
                             Annuler
                         </button>
-                        <button name="add" class="hover" type="submit">Ajouter</button>
+                        <button name="type" value="add" class="hover" type="submit">Ajouter</button>
                     </div>
                 </form>
             </div>

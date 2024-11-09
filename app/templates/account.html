@@ -6,10 +6,13 @@
     <div class="column">
         <h1>Compte</h1>
         <div>Connecté en tant que {{ current_user.name }} ({{ current_user.email }})</div>
-        <form class="flex" action="{{ url_for("account") }}" method="post">
+        <form class="flex" action="{{ url_for("post_account") }}" method="post">
             <button class="hover" type="submit" name="submit" value="logout">Déconnexion</button>
+            {% if current_user.admin == 1 %}
+                <a href="{{ url_for("admin") }}" class="hover">Panneau administrateur</a>
+            {% endif %}
         </form>
-        <form class="column start top" action="{{ url_for("account") }}" method="post">
+        <form class="column start top" action="{{ url_for("post_account") }}" method="post">
             <div class="rate">Changer le nom</div>
             <label>
                 <span>Nom complet</span>
@@ -17,7 +20,7 @@
             </label>
             <button class="hover" type="submit" name="submit" value="name">Valider</button>
         </form>
-        <form class="column start top" action="{{ url_for("account") }}" method="post">
+        <form class="column start top" action="{{ url_for("post_account") }}" method="post">
             <div class="rate">Changer le mot de passe</div>
             <label>
                 <span>Ancien mot de passe</span>
