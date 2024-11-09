@@ -16,26 +16,4 @@ You can add / delete / modify books and comments
 - [ ] English version
 
 ### How to run
-## FAKE TUTORIAL : HOW TO RUN WIP
-
-Generate a virtual environment
-```bash
-python -m venv venv
-```
-Activate the virtual environment
-```bash
-source venv/bin/activate
-```
-Install the dependencies
-```bash
-pip install -r requirements.txt
-```
-Set the environment variables
-```bash
-export FLASK_APP=app
-```
-Then execute the app with
-```bash
-flask run
-```
-It will run on [http://localhost:5000](http://localhost:5000)
+Just execute `run.sh`

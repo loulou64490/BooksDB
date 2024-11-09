@@ -4,7 +4,7 @@
 
 {% block content %}
     <div class="login">
-        <form class="result hidden" action=""
+        <form class="result hidden" action="{{ url_for('post_login') }}"
               method="post" id="login">
             <p class="name">Se connecter</p>
             <div class="flex">
@@ -35,7 +35,7 @@
                 <button class="hover" type="submit" name="submit" value="login">Connexion</button>
             </div>
         </form>
-        <form class="result hidden" action="{{ url_for('login') }}"
+        <form class="result hidden" action="{{ url_for('post_login') }}"
               method="post" id="register">
             <p class="name">S'inscrire</p>
             <div class="flex">

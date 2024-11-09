@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ data['name'] }} - BooksDB{% endblock %}
+
+{% block content %}
+    <h1>{{ data['name'] }}</h1>
+    <div class="column top">
+        {% if books %}
+            <div class="rate">Derniers livres ajoutés</div>
+            <div class="column welcome">
+                {% for book in books %}
+                    <a class="" href="{{ url_for('book') }}?id={{ book['id'] }}">{{ book['title'] }}
+                        par {{ book['author'] }}, {{ book['year'] }}</a>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% if comments %}
+            <div class="rate">Derniers commentaires ajoutés</div>
+            <div class="column welcome">
+                {% for comment in comments %}
+                    <a class="" href="{{ url_for('book') }}?id={{ comment['book_id'] }}">{{ comment['title'] }} : {{ comment['rating'] }}/5 {{ comment['comment'] }}
+                        </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+
+{% endblock %}

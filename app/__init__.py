@@ -9,6 +9,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///books.db'
 db = SQLAlchemy(app)
 login = LoginManager(app)
 login.login_view = 'login'
-login.login_message = 'Veuillez vous connecter pour accéder à cette page'
+login.login_message = 'Veuillez vous connecter'
 
 from app import routes
