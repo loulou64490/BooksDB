@@ -65,45 +65,47 @@ def val_comment(val, own=False):
         return True
     return False
 
-def val_user(val, admin=False):
+def val_user(val, not_admin=False):
     val = execute_query("SELECT id, admin FROM users WHERE id=?", (val,), fetchone=True)
     if val:
-        if admin:
-            return bool(val['admin'])
+        if not_admin:
+            return not bool(val['admin'])
         return True
     return False
 
 
-def generate_date(comments):
+def generate_date_comment(comments):
     date = {}
     for i in comments:
-        d = int(time() - i['date'])
-        if d < 3600:
-            d = str(d // 60) + ' minute'
-        elif d < 86400:
-            d = str(d // 3600) + ' heure'
-        elif d < 604800:
-            d = str(d // 86400) + ' jour'
-        elif d < 2678400:
-            d = str(d // 604800) + ' semaine'
-        elif d < 31536000:
-            d = str(d // 2678400) + 'mois'
-        else:
-            d = str(d // 31536000) + ' an'
-        if d[0] > '1' and d[-1] != 's':
-            d += 's'
-        date[i['id']] = 'il y a ' + d
-        if d == '0 minute':
-            date[i['id']] = "à l'instant"
+        date[i['id']]=generate_date(i['date'])
     return date
 
+def generate_date(date):
+    d = int(time() - date)
+    if d < 3600:
+        d = str(d // 60) + ' minute'
+    elif d < 86400:
+        d = str(d // 3600) + ' heure'
+    elif d < 604800:
+        d = str(d // 86400) + ' jour'
+    elif d < 2678400:
+        d = str(d // 604800) + ' semaine'
+    elif d < 31536000:
+        d = str(d // 2678400) + 'mois'
+    else:
+        d = str(d // 31536000) + ' an'
+    if d[0] > '1' and d[-1] != 's':
+        d += 's'
+    d = 'il y a ' + d
+    if d == 'il y a 0 minute':
+        d = "à l'instant"
+    return d
 
 def execute_query(query, params=(), fetchone=False, fetchall=False, commit=False):
     with sqlite3.connect('instance/books.db') as conn:
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
         cur.execute("PRAGMA foreign_keys = ON")
-        print(query,params)
         cur.execute(query, params)
 
         if commit:

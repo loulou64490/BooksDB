@@ -1,7 +1,8 @@
 from app import app, db
 from flask import render_template, request, redirect, flash, url_for, session
 from flask_login import login_user, logout_user, login_required, current_user
-from app.models import execute_query, User, generate_date, val_email, Book, Comment, val_comment, val_book, val_user
+from app.models import execute_query, User, generate_date_comment, val_email, Book, Comment, val_comment, val_book, \
+    val_user, generate_date
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -119,7 +120,8 @@ def user():
         comments = execute_query(
             "SELECT comments.id, comment, rating, comments.date, title, author, book_id FROM comments join books on comments.book_id = books.id WHERE comments.user_id=? ORDER BY comments.id DESC limit 5",
             [user_id], fetchall=True)
-        return render_template('user.html', data=data, books=books, comments=comments, date=generate_date(comments))
+        return render_template('user.html', data=data, books=books, comments=comments, date=generate_date_comment(
+            comments))
     flash('L\'utilisateur a surement été supprimé')
     return render_template('errors/404.html'), 404
 
@@ -167,7 +169,7 @@ def inject_add_book():
 @app.route('/livre')
 def book():
     book_id = request.args.get('id')
-    data = execute_query("SELECT * FROM books WHERE id=?", [book_id], fetchone=True)
+    data = execute_query("SELECT books.id, title, author, year, user_id, name, books.date FROM books join users on books.user_id = users.id WHERE books.id=?", [book_id], fetchone=True)
     if data:
         comments = execute_query(
             "SELECT comments.id, comment, rating, comments.date, name, user_id FROM comments join users on comments.user_id = users.id WHERE book_id=? ORDER BY comments.id DESC",
@@ -182,8 +184,8 @@ def book():
                 mod_comm_form[i['id']] = Comment()
                 mod_comm_form[i['id']].content.data, mod_comm_form[i['id']].rating.data = i['comment'], i['rating']
             return render_template('book.html', comm=Comment(), data=data, comments=comments, average=average,
-                                   date=generate_date(comments))
-        return render_template('book.html', comm=Comment(), data=data)
+                                   date=generate_date_comment(comments), book_date=generate_date(data['date']))
+        return render_template('book.html', comm=Comment(), data=data, book_date=generate_date(data['date']))
     flash('Le livre a surement été supprimé')
     return render_template('errors/404.html'), 404
 
@@ -296,7 +298,7 @@ def admin():
         'users': execute_query("SELECT id, name, email FROM users where signal>0 order by users.signal desc",
                                fetchall=True)
     }
-    return render_template('admin.html', data=data, date=generate_date(data['comments']))
+    return render_template('admin.html', data=data, date=generate_date_comment(data['comments']))
 
 
 @app.route('/post_admin', methods=['POST'])
@@ -336,13 +338,13 @@ def post_admin():
         },
         'user': {
             'delete': {
-                'validate': lambda: val_user(form['delete']),
+                'validate': lambda: val_user(form['delete'], not_admin=True),
                 'query': "DELETE FROM users WHERE id=?",
                 'params': lambda: [form['delete']],
                 'flash': 'Utilisateur supprimé'
             },
             'validate': {
-                'validate': lambda: val_user(form['validate']),
+                'validate': lambda: val_user(form['validate'], not_admin=True),
                 'query': "UPDATE users SET signal=0 WHERE id=?",
                 'params': lambda: [form['validate']],
                 'flash': 'Utilisateur validé'
