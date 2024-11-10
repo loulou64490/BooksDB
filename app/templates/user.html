@@ -3,7 +3,20 @@
 {% block title %}{{ data['name'] }} - BooksDB{% endblock %}
 
 {% block content %}
-    <h1>{{ data['name'] }}</h1>
+    <div class="flex space">
+        <h1>{{ data['name'] }}</h1>
+        {% if current_user['id'] != data['user_id'] %}
+            <div class="menu-button" tabindex="0" id="book-menu">
+                <div class="square"></div>
+                <div class="square"></div>
+                <div class="square"></div>
+            </div>
+            <form id="comm-book-menu" class="menu-popup" action="{{ url_for('post_user') }}" method="post">
+                <input type="hidden" name="user_id" value="{{ data['id'] }}">
+                <button type="submit" name="type" value="signal" class="hover">Signaler</button>
+            </form>
+        {% endif %}
+    </div>
     <div class="column top">
         {% if books %}
             <div class="rate">Derniers livres ajoutés</div>
@@ -18,8 +31,9 @@
             <div class="rate">Derniers commentaires ajoutés</div>
             <div class="column welcome">
                 {% for comment in comments %}
-                    <a class="" href="{{ url_for('book') }}?id={{ comment['book_id'] }}">{{ comment['title'] }} : {{ comment['rating'] }}/5 {{ comment['comment'] }}
-                        </a>
+                    <a class="" href="{{ url_for('book') }}?id={{ comment['book_id'] }}">{{ comment['title'] }}
+                        : {{ comment['rating'] }}/5 {{ comment['comment'] }}
+                    </a>
                 {% endfor %}
             </div>
         {% endif %}

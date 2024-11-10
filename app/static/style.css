@@ -279,7 +279,7 @@ footer div {
     gap: 0.5rem;
 }
 
-.box2{
+.box2 {
     background: var(--bg2);
     border-radius: var(--round);
     padding: 1rem;
@@ -466,12 +466,16 @@ footer div {
 }
 
 .cross:after {
+    position: relative;
+    top: -2px;
     display: inline-block;
     content: "\00d7";
     font-size: 2.5rem;
 }
 
 .check:after {
+    position: relative;
+    top: -1px;
     display: inline-block;
     content: "\2143";
     transform: rotate(45deg);
