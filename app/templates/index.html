@@ -6,7 +6,7 @@
     <div class="flex space max">
         <div class="full">
             {% if current_user.is_authenticated %}
-                <h1>Bienvenue {{ current_user.name }} !</h1>
+                <h1>Bienvenue <a class="underline" href="{{ url_for('user') }}?id={{ current_user.id }}">{{ current_user.name }}</a> !</h1>
             {% else %}
                 <h1>Bienvenue sur BooksDB</h1>
             {% endif %}

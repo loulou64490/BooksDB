@@ -4,8 +4,13 @@
 
 {% block content %}
     <div class="flex space">
-        <h1>{{ data['name'] }}</h1>
-        {% if current_user['id'] != data['user_id'] %}
+        <div class="column2">
+            <h1>{{ data['name'] }}</h1>
+            {% if data['admin']==1 %}
+                <p class="comm_date">Administrateur</p>
+            {% endif %}
+        </div>
+        {% if current_user['id'] != data['user_id'] and current_user.is_authenticated and data['admin']==0 %}
             <div class="menu-button" tabindex="0" id="book-menu">
                 <div class="square"></div>
                 <div class="square"></div>

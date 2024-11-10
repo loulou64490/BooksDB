@@ -22,7 +22,7 @@ from app import app
 # TODO: protection anti-spam (limiter nombre de requêtes par utilisateur)
 # TODO: page utilisateur
 # TODO: fonction pour restaurer les éléments supprimés
-# lors de la restauration d'un livre restaurer tout les commentaires associés
+# lors de la restauration d'un livre restaurer tout les commentaires associés, pareil pour les utilisateurs
 
 
 if __name__ == '__main__':

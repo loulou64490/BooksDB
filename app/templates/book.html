@@ -4,9 +4,10 @@
 
 {% block content %}
     <div class="flex space">
-        <div>
+        <div class="column2">
             <h1 class="break-word">{{ data['title'] }}</h1>
             <p class="rate break-word">{{ data['author'] }}, {{ data['year'] }}</p>
+            <p class="comm_date">Ajouté par <a class="underline comm_date" href="{{ url_for('user') }}?id={{ data['user_id'] }}">{{ data['name'] }}</a> {{ book_date }}</p>
         </div>
         <div class="flex">
             {% if comments %}
@@ -42,7 +43,7 @@
                         <div class="flex">
                             <p class="comm_note">{{ comment['rating'] }}/5</p>
                             <div class="flex2">
-                                <p class="comm_auteur">{{ comment['name'] }}</p>
+                                <a class="underline" href="{{ url_for('user') }}?id={{ comment['user_id'] }}">{{ comment['name'] }}</a>
                                 <p class="comm_date">{{ date[comment['id']] }}</p>
                             </div>
                         </div>
