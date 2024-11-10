@@ -22,7 +22,6 @@ def index():
         'rate': execute_query(
             "SELECT books.id, title, author, year, AVG(rating) as average "
             "FROM books LEFT JOIN comments ON books.id=comments.book_id "
-
             "GROUP BY books.id ORDER BY average DESC LIMIT 5", fetchall=True),
         'comment': execute_query(
             "SELECT books.id, title, author, year, COUNT(comment) as count "
@@ -67,7 +66,7 @@ def login():
 
         if form['submit'] == 'login':
             ex_user = User.query.filter_by(email=form['email']).first()
-            if not (ex_user and check_password_hash(user.hash, form['password'])):
+            if not (ex_user and check_password_hash(ex_user.hash, form['password'])):
                 errors = 'Adresse mail ou mot de passe incorrect'
             if errors:
                 return render_template('login.html', errors=errors, email=form['email'])
@@ -123,6 +122,18 @@ def user():
         return render_template('user.html', data=data, books=books, comments=comments, date=generate_date(comments))
     flash('L\'utilisateur a surement été supprimé')
     return render_template('errors/404.html'), 404
+
+@app.route("/post_utilisateur", methods=['POST'])
+@login_required
+def post_user():
+    form = request.form.to_dict()
+    if form['user_id'] and form['type'] == 'signal':
+        execute_query("update users set signal=signal+1 where id=?",[form['user_id']], commit=True)
+        flash("Utilisateur signalé")
+        return redirect(url_for('user', id=form['user_id']))
+    flash("ERREUR")
+    return redirect(url_for('index'))
+
 
 
 @app.route("/post_compte", methods=['POST'])
@@ -183,7 +194,7 @@ def post_book():
     result = Book()
     form = {}
     for i in result:
-        if i.data:
+        if i.data is not None:
             form[i.name] = i.data
     actions = {
         'add': {
@@ -206,7 +217,7 @@ def post_book():
         },
         'signal': {
             'validate': lambda: val_book(form['book_id']),
-            'query': "UPDATE books SET signal=1 WHERE id=?",
+            'query': "UPDATE books SET signal=signal+1 WHERE id=?",
             'params': lambda: [form['book_id']],
             'flash': 'Livre signalé'
         }
@@ -232,7 +243,7 @@ def post_comment():
     result = Comment()
     form = {}
     for i in result:
-        if i.data:
+        if i.data is not None:
             form[i.name] = i.data
     actions = {
         'add': {
@@ -255,7 +266,7 @@ def post_comment():
         },
         'signal': {
             'validate': lambda: val_comment(form['comm_id']),
-            'query': "UPDATE comments SET signal=1 WHERE id=?",
+            'query': "UPDATE comments SET signal=signal+1 WHERE id=?",
             'params': lambda: [form['comm_id']],
             'flash': 'Commentaire signalé'
         }
@@ -277,12 +288,13 @@ def admin():
         return render_template('errors/404.html'), 404
     data = {
         'books': execute_query(
-            "SELECT books.id, title, author, year, name FROM books join users on books.user_id = users.id where books.signal=1",
+            "SELECT books.id, title, author, year, name FROM books join users on books.user_id = users.id where books.signal>0 order by books.signal desc",
             fetchall=True),
         'comments': execute_query(
-            "SELECT comments.id, comment, rating, name, title, author, comments.date FROM comments join users on users.id = comments.user_id join books on books.id = book_id where comments.signal=1",
+            "SELECT comments.id, comment, rating, name, title, author, comments.date FROM comments join users on users.id = comments.user_id join books on books.id = book_id where comments.signal>0 order by comments.signal desc",
             fetchall=True),
-        'users': execute_query("SELECT id, name, email FROM users where signal=1", fetchall=True)
+        'users': execute_query("SELECT id, name, email FROM users where signal>0 order by users.signal desc",
+                               fetchall=True)
     }
     return render_template('admin.html', data=data, date=generate_date(data['comments']))
 

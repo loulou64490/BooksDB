@@ -1,4 +1,5 @@
 import sqlite3
+from select import select
 from time import time
 from flask_login import UserMixin, current_user
 from app import db, login
@@ -52,8 +53,7 @@ def val_book(val, own=False):
     if val:
         if own:
             return current_user.id == val['user_id']
-        else:
-            return True
+        return True
     return False
 
 
@@ -62,14 +62,15 @@ def val_comment(val, own=False):
     if val:
         if own:
             return current_user.id == val['user_id']
-        else:
-            return True
+        return True
     return False
 
-def val_user(val):
-    val = execute_query("SELECT id FROM users WHERE id=?", (val,), fetchone=True)
+def val_user(val, admin=False):
+    val = execute_query("SELECT id, admin FROM users WHERE id=?", (val,), fetchone=True)
     if val:
-       return True
+        if admin:
+            return bool(val['admin'])
+        return True
     return False
 
 
@@ -89,11 +90,11 @@ def generate_date(comments):
             d = str(d // 2678400) + 'mois'
         else:
             d = str(d // 31536000) + ' an'
-        if d[0] == '1' and d[-1] != 's':
+        if d[0] > '1' and d[-1] != 's':
             d += 's'
         date[i['id']] = 'il y a ' + d
-        if d == '0 minutes':
-            date[i['id']] = 'à l\'instant'
+        if d == '0 minute':
+            date[i['id']] = "à l'instant"
     return date
 
 
@@ -102,6 +103,7 @@ def execute_query(query, params=(), fetchone=False, fetchall=False, commit=False
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
         cur.execute("PRAGMA foreign_keys = ON")
+        print(query,params)
         cur.execute(query, params)
 
         if commit:

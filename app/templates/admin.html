@@ -4,6 +4,11 @@
 
 {% block content %}
     <h1>Admin</h1>
+    <p class="top"><b>Rappel : </b><br>
+        Supprimer un livre supprime tous les commentaires associés, et de la même manière, supprimer un utilisateur
+        supprime tous ses livres ajoutés.<br>
+        Il est donc préférable de supprimer un commentaire plutôt qu’un utilisateur ou un livre.
+    </p>
     <div class="column top">
         {% if data['comments'] %}
             <form action="{{ url_for('post_admin') }}" method="post" class="column">
@@ -21,9 +26,9 @@
                                    onclick="expand('id{{ item['id'] }}')">{{ item['comment'] }}</p>
                             </div>
                             <div class="flex">
-                                <button type="submit" name="delete" value="{{ item['id'] }}"
+                                <button title="Supprimer" type="submit" name="delete" value="{{ item['id'] }}"
                                         class="icon cross"></button>
-                                <button type="submit" name="validate" value="{{ item['id'] }}"
+                                <button title="Valider" type="submit" name="validate" value="{{ item['id'] }}"
                                         class="icon check"></button>
                             </div>
                         </div>
@@ -45,9 +50,9 @@
                                 <p class="comm_comm break-word">Ajouté par : {{ item['name'] }}</p>
                             </div>
                             <div class="flex">
-                                <button type="submit" name="delete" value="{{ item['id'] }}"
+                                <button title="Supprimer" type="submit" name="delete" value="{{ item['id'] }}"
                                         class="icon cross"></button>
-                                <button type="submit" name="validate" value="{{ item['id'] }}"
+                                <button title="Valider" type="submit" name="validate" value="{{ item['id'] }}"
                                         class="icon check"></button>
                             </div>
                         </div>
@@ -67,9 +72,9 @@
                                 <p class="comm_comm break-word">Mail : {{ item['email'] }}</p>
                             </div>
                             <div class="flex">
-                                <button type="submit" name="delete" value="{{ item['id'] }}"
+                                <button title="Supprimer" type="submit" name="delete" value="{{ item['id'] }}"
                                         class="icon cross"></button>
-                                <button type="submit" name="validate" value="{{ item['id'] }}"
+                                <button title="Valider" type="submit" name="validate" value="{{ item['id'] }}"
                                         class="icon check"></button>
                             </div>
                         </div>

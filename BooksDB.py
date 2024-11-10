@@ -12,7 +12,7 @@ from app import app
 # TODO: améliorer commentaires
 # like dislike
 # TODO: panneau admin
-# trier commentaire par les plus signalés
+# restauration supprimés
 # ne pas supprimer les signalements, seulement masquer les données
 # signalement: qui a signalé, qu'est-ce qui a été signalé, qui a écrit ce qui a été signalé
 # nombre signalements
@@ -21,6 +21,8 @@ from app import app
 # TODO: vérifier si le livre existe déjà
 # TODO: protection anti-spam (limiter nombre de requêtes par utilisateur)
 # TODO: page utilisateur
+# TODO: fonction pour restaurer les éléments supprimés
+# lors de la restauration d'un livre restaurer tout les commentaires associés
 
 
 if __name__ == '__main__':
