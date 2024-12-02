@@ -1,6 +1,5 @@
 # BooksDB
 _School project to learn Flask and SQLite_  
-## ALPAHA VERSION : PLEASE REPORT ANY BUGS
 
 BooksDB is a small Flask app to manage a book database with comment and rating  
 You can add / delete / modify books and comments
@@ -10,7 +9,7 @@ You can add / delete / modify books and comments
 
 ### Roadmap
 - [x] User account to manage book and comment
-- [ ] Admin panel
+- [x] Admin panel
 - [ ] Local AI features
 - [ ] Mobile version
 - [ ] English version

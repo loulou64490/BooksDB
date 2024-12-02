@@ -12,7 +12,7 @@ def not_found(e):
 
 
 @app.errorhandler(500)
-def not_found(e):
+def server_error(e):
     flash('ERREUR')
     return redirect(url_for('index')), 500
 
@@ -290,12 +290,12 @@ def admin():
         return render_template('errors/404.html'), 404
     data = {
         'books': execute_query(
-            "SELECT books.id, title, author, year, name FROM books join users on books.user_id = users.id where books.signal>0 order by books.signal desc",
+            "SELECT books.id, title, author, year, name, books.signal FROM books join users on books.user_id = users.id where books.signal>0 order by books.signal desc",
             fetchall=True),
         'comments': execute_query(
-            "SELECT comments.id, comment, rating, name, title, author, comments.date FROM comments join users on users.id = comments.user_id join books on books.id = book_id where comments.signal>0 order by comments.signal desc",
+            "SELECT comments.id, comment, rating, name, title, author, comments.date, comments.signal FROM comments join users on users.id = comments.user_id join books on books.id = book_id where comments.signal>0 order by comments.signal desc",
             fetchall=True),
-        'users': execute_query("SELECT id, name, email FROM users where signal>0 order by users.signal desc",
+        'users': execute_query("SELECT id, name, email, users.signal FROM users where signal>0 order by users.signal desc",
                                fetchall=True)
     }
     return render_template('admin.html', data=data, date=generate_date_comment(data['comments']))
