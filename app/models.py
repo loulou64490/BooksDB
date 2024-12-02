@@ -1,5 +1,4 @@
 import sqlite3
-from select import select
 from time import time
 from flask_login import UserMixin, current_user
 from app import db, login

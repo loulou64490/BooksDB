@@ -102,7 +102,7 @@ a {
     box-shadow: var(--shadow);
     padding: 0.6rem;
     background: var(--bg2);
-    transition: background 0.2s, transform 0.1s, box-shadow 0.1s;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.1s, border 0.1s;
 }
 
 .hover:hover {

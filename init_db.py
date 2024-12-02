@@ -109,12 +109,12 @@ def init_db(add_content=False):
 
 
 def create_deleted_tables_and_triggers(cur, table_name, columns):
-    # Création de la table "_deleted"
+    # deleted table
     deleted_table_name = f"{table_name}_deleted"
     columns_def = ", ".join(columns)
     cur.execute(f"CREATE TABLE IF NOT EXISTS {deleted_table_name} AS SELECT {columns_def} FROM {table_name} WHERE 0;")
 
-    # Création du trigger de suppression
+    # delete trigger
     columns_list = ", ".join(columns)
     old_values_list = ", ".join([f"OLD.{col}" for col in columns])
     cur.execute(f'''
