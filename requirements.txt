@@ -18,3 +18,5 @@ ollama
 WTForms
 anyio
 SQLAlchemy
+flask_sqlalchemy
+flask_wtf
