@@ -52,9 +52,9 @@ def init_db(add_content=False):
                                        ['id', 'name', 'email', 'hash', 'date', 'last', 'signal', 'admin'])
 
     if add_content:
-        cur.execute("insert into users(name, hash, email, admin) values(?,?,?,?)", ("Loulou",
-                                                                                    "scrypt:32768:8:1$OymK9Js3CGKPFMtM$f1dfa1604b7f6a1e1cc56971ecfcde1912928eb7d45672b85098ada6b9a05100371ae1374854a5a18c3a84d1a5bf394bc46f3c00ff8bc3cea21ce3c6138ea699",
-                                                                                    "louis@revuejazz.fr", 1))
+        cur.execute("insert into users(name, hash, email, admin) values(?,?,?,?)", ("Admin",
+                                                                                    "scrypt:32768:8:1$aNm3ipYEIaeW0XSZ$e4cf94dc6083f1ce88f8ac5776610b036bd0bed5a3a013a0a4c8da9b7adffd141a37cd75e8a6dc95c857bf6a9a7c163f596a850e0c4d7792cf4ee21c1d5d2c6f",
+                                                                                    "admin@admin.fr", 1))
         cur.executemany("insert into books(title,author,year, user_id) values(?, ?, ?,?)", [
             ("1984", "Orwell", 1949, 1),
             ("Dune", "Herbert", 1965, 1),

@@ -6,7 +6,7 @@ VENV_DIR="venv"
 # Check if the virtual environment already exists
 if [ ! -d "$VENV_DIR" ]; then
     echo "Creating virtual environment..."
-    python3 -m venv "$VENV_DIR"
+    python -m venv "$VENV_DIR"
     echo "Virtual environment created."
 
     # Activate the virtual environment
@@ -25,6 +25,16 @@ else
     echo "Virtual environment already exists."
     # Activate the virtual environment
     source "$VENV_DIR/bin/activate"
+fi
+
+# Check if the instance directory exists
+if [ ! -d "instance" ]; then
+    echo "Instance directory not found. Initializing database..."
+    mkdir instance
+    python init_db.py
+    echo "Database initialized."
+else
+    echo "Instance directory already exists."
 fi
 
 # Run the Flask app

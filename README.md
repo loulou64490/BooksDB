@@ -16,3 +16,7 @@ You can add / delete / modify books and comments
 
 ### How to run
 Just execute `run.sh`
+
+#### Default admin account:
+- mail: `admin@admin.fr`
+- password: `admin`
